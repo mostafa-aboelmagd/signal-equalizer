@@ -40,45 +40,27 @@ class MainApp(QtWidgets.QMainWindow):
 
     def connectSignals(self):
         """Connect UI signals to their respective slots."""
-        # Connect menu actions
-        self.actionOpen.triggered.connect(self.uploadAndPlotSignal)
-        self.actionClose.triggered.connect(self.closeApp)
-
-        mode_actions = {
-            self.actionUniform: "uniform",
-            self.actionMusical: "musical instruments",
-            self.actionAnimal_Sounds: "animal sounds",
-            self.actionECG_Abnormalities: "ECG abn",
-        }
-
-        for action, mode in mode_actions.items():
-            action.triggered.connect(lambda _, m=mode: self.setMode(m))
-
+        # Connect comboBox actions
+        self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
+      
+        
+      
         # Connect push buttons
         self.pushButton_playPause.clicked.connect(self.togglePlayPause)
         self.pushButton_zoomIn.clicked.connect(lambda: self.zoom(0.5))
         self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(2))
         self.pushButton_reset.clicked.connect(lambda: self.stopAndReset(True))
         self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
-        self.pushButton_applySmoothing.clicked.connect(self.setWindowParameters)
-
+   
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
-        self.comboBox_smoothingWindows.activated.connect(self.setSmoothingWindow)
+        self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
 
-    def closeApp(self):
-        """Close the application."""
-        QApplication.instance().quit()
+
 
     def setMode(self, mode):
         """Set the mode of the application."""
-        self.clearAll()
-        self.mode = mode
-        self.isAudio, self.numberOfSliders, self.fMin, self.fMax, edit_labels = FileBrowser.set_mode(self.fileBrowser, mode)
-        if edit_labels:
-            for i in range(self.numberOfSliders):
-                label = getattr(self, f"label_{i + 1}_Hz")
-                label.setText(f"{str(self.fMax[i])} Hz")
+        pass
 
     def uploadAndPlotSignal(self):
         """Upload and plot the signal."""
@@ -104,7 +86,7 @@ class MainApp(QtWidgets.QMainWindow):
         """Compute the inverse Fourier transform."""
         pass
 
-    def setSmoothingWindow(self):
+    def setFrequencyScale(self):
         """Set the smoothing window."""
         pass
 
