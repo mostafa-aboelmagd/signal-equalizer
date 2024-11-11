@@ -20,11 +20,12 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from classes import FileBrowser
+from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
 
-class MainApp(QtWidgets.QMainWindow):
+class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainApp, self).__init__()
-        uic.loadUi('UITeam15.ui', self)
+        self.setupUi(self)
         self.setupUI()
         self.connectSignals()
 
@@ -43,8 +44,6 @@ class MainApp(QtWidgets.QMainWindow):
         # Connect comboBox actions
         self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
       
-        
-      
         # Connect push buttons
         self.pushButton_playPause.clicked.connect(self.togglePlayPause)
         self.pushButton_zoomIn.clicked.connect(lambda: self.zoom(0.5))
@@ -55,8 +54,6 @@ class MainApp(QtWidgets.QMainWindow):
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
         self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
-
-
 
     def setMode(self, mode):
         """Set the mode of the application."""
@@ -76,6 +73,10 @@ class MainApp(QtWidgets.QMainWindow):
 
     def plotFrequencySpectrum(self):
         """Plot the frequency spectrum of the signal."""
+        pass
+
+    def computeFourierTransform(self):
+        """Compute the Fourier transform"""
         pass
 
     def computeFourierTransform(self):
