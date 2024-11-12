@@ -3,6 +3,9 @@ import scipy.io.wavfile
 import librosa
 import soundfile as sf
 import os
+import pyqtgraph as pg
+import numpy as np
+
 
 
 from PyQt5.QtWidgets import QFileDialog
@@ -19,8 +22,3 @@ class FileBrowser:
       
     def browse_file(self, mode):
         pass
-
-
-
-  
-
