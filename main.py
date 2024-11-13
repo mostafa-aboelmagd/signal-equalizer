@@ -26,6 +26,7 @@ from PyQt5.QtCore import QTimer
 from classes import FileBrowser
 from PyQt5 import QtWidgets
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
+import classes
 
 class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -42,12 +43,10 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.chunksize = 10
         self.curr_ptr = 0
         self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
-        self.time_values = np.linspace(0, 1, 1000)
-        self.signal = self.generateSignal(magnitudes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-        self.modified_signal = self.signal
-        self.timer.start(100)
-        self.connectSignals()
+        
         self.plot_frequency_domain()
+        self.startDefault()
+        self.connectSignals()
 
     def setupUI(self):
         """Setup UI elements and initial configurations."""
@@ -56,6 +55,22 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.outputViewBox = self.PlotWidget_outputSignal.getViewBox()
         self.inputViewBox.setXLink(self.outputViewBox)
         self.inputViewBox.setYLink(self.outputViewBox)
+        self.PlotWidget_fourier.setLabel('left', 'Magnitude')
+        self.PlotWidget_fourier.setLabel('bottom', 'Frequency')
+    
+    def startDefault(self):
+        self.isPaused = False
+        self.sampling_rate = 0
+        self.chunksize = 10
+        self.curr_ptr = 0
+        self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
+        if self.checkBox_showSpectrogram.isChecked():
+            self.PlotWidget_inputSpectrogram.showSpectrogram()
+            self.PlotWidget_outputSpectrogram.showSpectrogram()
+        self.time_values = np.linspace(0, 1, 1000)
+        self.signal = self.generateSignal(magnitudes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        self.modified_signal = self.signal
+        self.timer.start(100)
 
     def connectSignals(self):
         """Connect UI signals to their respective slots."""
@@ -68,7 +83,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(2))
         self.pushButton_reset.clicked.connect(lambda: self.stopAndReset(True))
         self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
-        self.comboBox_modeSelection.currentIndexChanged.connect(self.updateNumOfSliders)
+        self.comboBox_modeSelection.currentIndexChanged.connect(self.changeMode)
         self.timer.timeout.connect(self.plotSignal_timeDomain)
         self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
    
@@ -123,17 +138,17 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """Plot the signal in the time domain."""
         if len(self.signal) > 0 and self.isPaused == False:
             # taking chunks from the signal and the corresponding time values
-            segment_y_ip = self.signal[self.curr_ptr : self.curr_ptr + self.chunksize]   # from index "curr_ptr" to index "curr_ptr + chunksize"
-            segment_y_op = self.modified_signal[self.curr_ptr : self.curr_ptr + self.chunksize]
-            segment_x = self.time_values[ self.curr_ptr : self.curr_ptr + self.chunksize]  # same in time values stored for the signal
+            self.segment_y_ip = self.signal[self.curr_ptr : self.curr_ptr + self.chunksize]   # from index "curr_ptr" to index "curr_ptr + chunksize"
+            self.segment_y_op = self.modified_signal[self.curr_ptr : self.curr_ptr + self.chunksize]
+            self.segment_x = self.time_values[ self.curr_ptr : self.curr_ptr + self.chunksize]  # same in time values stored for the signal
             
-            self.PlotWidget_inputSignal.plotItem.setYRange(-0.5, 0.5)
+            self.PlotWidget_inputSignal.plotItem.setYRange(-1, 1)
             self.PlotWidget_inputSignal.plotItem.setXRange(self.left_x_view, self.left_x_view + 1)
-            self.PlotWidget_outputSignal.plotItem.setYRange(-0.5, 0.5)
+            self.PlotWidget_outputSignal.plotItem.setYRange(-1, 1)
             self.PlotWidget_outputSignal.plotItem.setXRange(self.left_x_view, self.left_x_view + 1)
-            self.PlotWidget_inputSignal.plot(segment_x, segment_y_ip, pen = 'r')
-            self.PlotWidget_outputSignal.plot(segment_x, segment_y_op, pen = 'b')
-            
+            self.PlotWidget_inputSignal.plot(self.segment_x, self.segment_y_ip, pen = 'r')
+            self.PlotWidget_outputSignal.plot(self.segment_x, self.segment_y_op, pen = 'b')
+
             
             if self.curr_ptr + self.chunksize <= len(self.signal):
                 self.curr_ptr += self.chunksize
@@ -167,10 +182,10 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.modified_signal = librosa.istft(self.modified_fft_data)
         
 
-    def updateNumOfSliders (self):
+    def changeMode (self):
         selected_index = self.comboBox_modeSelection.currentIndex()
-
         if selected_index == 0:
+            self.startDefault()
             self.verticalSlider_1.show()
             self.verticalSlider_2.show()
             self.verticalSlider_3.show()
@@ -183,7 +198,12 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.verticalSlider_10.show()
             
         else:
-            
+            self.PlotWidget_outputSignal.clear()
+            self.PlotWidget_inputSignal.clear()
+            self.PlotWidget_inputSpectrogram.hideSpectrogram()
+            self.PlotWidget_outputSpectrogram.hideSpectrogram()
+            self.isPaused = True
+
             self.verticalSlider_1.hide()
             self.verticalSlider_3.hide()
             self.verticalSlider_5.hide()
@@ -245,11 +265,11 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def showAndHideSpectrogram(self):
         if self.checkBox_showSpectrogram.isChecked():
-            self.PlotWidget_inputSpectrogram.show()
-            self.PlotWidget_outputSpectrogram.show()
+            self.PlotWidget_inputSpectrogram.showSpectrogram()
+            self.PlotWidget_outputSpectrogram.showSpectrogram()
         else:
-            self.PlotWidget_inputSpectrogram.hide()
-            self.PlotWidget_outputSpectrogram.hide()
+            self.PlotWidget_inputSpectrogram.hideSpectrogram()
+            self.PlotWidget_outputSpectrogram.hideSpectrogram()
     
     def updateOutput(self):
         for i in range(0, 10):
@@ -261,10 +281,16 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.modified_signal += self.magnitudes[loopCounter] * np.sin(2* np.pi * i * self.time_values)
             loopCounter +=1
         
-        
+        # Update the output signal in real-time
+        self.PlotWidget_outputSignal.clear()  # Clear the previous plot
+        self.PlotWidget_outputSignal.plot(self.time_values[ : self.curr_ptr + self.chunksize], self.modified_signal[ : self.curr_ptr + self.chunksize], pen='b')
+
+        # If we're playing, don't stop the timer
+        if not self.isPaused:
+            self.togglePlayPause()
+
         self.PlotWidget_outputSpectrogram.update(self.magnitudes)
-        #self.timer.start()
-    
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = MainApp()
