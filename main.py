@@ -1,32 +1,11 @@
 import sys
 import numpy as np
-import pandas as pd
-import soundfile as sf
-import scipy
-from scipy import signal
-import matplotlib.pyplot as plt
-import plotly.graph_objs as go
-import plotly.offline as pyo
-import copy
- 
-from PyQt5 import QtWidgets, QtCore, uic
-from PyQt5.QtWidgets import QMessageBox, QApplication, QVBoxLayout, QWidget , QFileDialog
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QIcon
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-
 import librosa
- 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTimer
-
 from classes import FileBrowser
 from PyQt5 import QtWidgets
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
-import classes
 
 class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -35,10 +14,29 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.magnitudes = [1] * 10
         self.sliders = [self.verticalSlider_1, self.verticalSlider_2, self.verticalSlider_3, self.verticalSlider_4, self.verticalSlider_5,
                         self.verticalSlider_6, self.verticalSlider_7, self.verticalSlider_8, self.verticalSlider_9, self.verticalSlider_10]
+        self.labels = [self.label_1_Hz, self.label_2_Hz, self.label_3_Hz, self.label_4_Hz, self.label_5_Hz, self.label_6_Hz,
+                       self.label_7_Hz, self.label_8_Hz, self.label_9_Hz, self.label_10_Hz]
         self.setupUI()
         self.retranslateUi(self)
         self.timer = QTimer()
-        
+        self.ranges = [
+                       # uniform range frequency ranges
+                       [],
+                       {"Guitar": (0, 170), 
+                         "Flute" : (170, 250),
+                         "Harmonica": (250, 400),
+                         "Xylophone" : (400, 1000)},
+                       {"Dogs" : (0, 450),
+                        "Wolves" : (450, 1100),
+                        "Crow" : (1100, 3000),
+                        "Bat" : (3000, 9000)},
+                       {"Tachycardia & Couplets" : (0, 6.5),
+                        "Couplets Only" : (0, 5),
+                        "Tachycardia Only" : (0, 8),
+                        "Normal" : (0, 9)
+                       }
+                       ]
+
         self.startDefault()
         self.connectSignals()
         self.plot_frequency_domain()
@@ -73,14 +71,15 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
       
         # Connect push buttons
         self.pushButton_playPause.clicked.connect(self.togglePlayPause)
-        self.pushButton_zoomIn.clicked.connect(lambda: self.zoom(0.5))
-        self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(2))
+        self.pushButton_zoomIn.clicked.connect(lambda: self.zoom(0.8))
+        self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(1.2))
         self.pushButton_reset.clicked.connect(lambda: self.stopAndReset(True))
         self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
         self.comboBox_modeSelection.currentIndexChanged.connect(self.changeMode)
         self.timer.timeout.connect(self.plotSignal_timeDomain)
         self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
         self.comboBox_frequencyScale.activated.connect(self.set_log_scale)
+        self.speedSlider.valueChanged.connect(self.setSpeed)
    
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
@@ -101,26 +100,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.PlotWidget_fourier.log_scale = True
         self.plot_frequency_domain()
 
-    # def load_audio(self):
-    #     file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
-    #     if file_name:
-    #         try: 
-    #             # Load audio file
-    #             self.signal, self.sample_rate = sf.read(file_name)
-                
-    #             # If stereo, take only one channel
-    #             if self.signal.ndim > 1:
-    #                 self.signal = self.signal[:, 0]
-                
-    #             print(f"Loaded {file_name} with sample rate {self.sample_rate} Hz")
-    #         except Exception as e:
-    #             print(f"Failed to load audio: {e}")
-
-        #self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
-
-    def setMode(self, mode):
-        """Set the mode of the application."""
-        pass
 
     def uploadAndPlotSignal(self):
         """Upload and plot the signal."""
@@ -159,18 +138,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 
             else:
                 self.timer.stop()
-                self.isPaused = True
-           
-           
-    def plotSpectrogram(self, fig, canvas, audio, audioSamplingRate, signal):
-        """Plot the spectrogram of the signal."""
-        pass
-
-    def plotFrequencySpectrum(self):
-        """Plot the frequency spectrum of the signal."""
-        pass
-
-   
+                self.isPaused = True   
 
     def computeFourierTransform(self):
         """Compute the Fourier transform of the signal."""
@@ -188,6 +156,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         selected_index = self.comboBox_modeSelection.currentIndex()
         if selected_index == 0:
             self.startDefault()
+            self.PlotWidget_fourier.showCanvas()
             self.verticalSlider_1.show()
             self.verticalSlider_2.show()
             self.verticalSlider_3.show()
@@ -199,31 +168,51 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.verticalSlider_9.show()
             self.verticalSlider_10.show()
             
+            self.label_1_Hz.setText("10 Hz")
+            self.label_3_Hz.setText("30 Hz")
+            self.label_4_Hz.setText("40 Hz")
+            self.label_5_Hz.setText("50 Hz")
+            self.label_6_Hz.setText("60 Hz")
+            self.label_7_Hz.setText("70 Hz")
+            self.label_8_Hz.setText("80 Hz")
+            self.label_9_Hz.setText("90 Hz")
+            self.label_10_Hz.setText("100 Hz")
+
+            
         else:
             self.PlotWidget_outputSignal.clear()
             self.PlotWidget_inputSignal.clear()
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
+            self.PlotWidget_fourier.hideCanvas()
             self.isPaused = True
-
+            
             self.verticalSlider_1.hide()
             self.verticalSlider_3.hide()
             self.verticalSlider_5.hide()
             self.verticalSlider_7.hide()
             self.verticalSlider_9.hide()
             self.verticalSlider_10.hide()
-       
-    
-    
-    def getMappedSliderValue(self, slider_value):
-        """Get the mapped value of the slider."""
-        selected_index = self.comboBox_modeSelection.currentIndex()
-        if selected_index == 0:
-            pass
-        
-        else:
-            pass
-
+            
+            self.label_1_Hz.hide()
+            self.label_3_Hz.hide()
+            self.label_5_Hz.hide()
+            self.label_7_Hz.hide()
+            self.label_9_Hz.hide()
+            self.label_10_Hz.hide()
+            
+            shownIndices = [1, 3, 5, 7]
+            
+            currDicts = self.ranges[selected_index]
+            loopCounter = 0
+            for key in currDicts:
+                self.sliders[shownIndices[loopCounter]].setValue(10)
+                self.labels[shownIndices[loopCounter]].setText(key)
+                loopCounter += 1
+            
+            self.sliderFrequencyMap = {}
+            for i in range(len(shownIndices)):
+                self.sliderFrequencyMap[self.sliders[shownIndices[i]]] = currDicts[self.labels[shownIndices[i]].text()]
 
     def togglePlayPause(self):
         """Toggle play/pause of the signal."""
@@ -237,25 +226,25 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def setSpeed(self, speed):
         """Set the playback speed."""
-        pass
+        self.timer.setInterval(int(100 / speed))
 
     def stopAndReset(self, reset):
         """Stop and reset the signal."""
-        pass
+        self.timer.stop()
+        self.isPaused = True
+        if reset:
+            self.curr_ptr = 0
+            self.left_x_view = 0
+            self.PlotWidget_inputSignal.clear()
+            self.PlotWidget_outputSignal.clear()
+            self.isPaused = False
+            self.timer.start(100)         
 
     def zoom(self, factor):
         """Zoom in or out on the signal."""
-        pass
-
-    def showAndHideSpectrogram(self, state):
-        """Show or hide the spectrogram."""
-        pass
-
-   
-    def clearAll(self):
-        """Clear all data and reset the UI."""
-        pass
-
+        self.PlotWidget_inputSignal.plotItem.getViewBox().scaleBy((factor, 1))
+        # self.PlotWidget_outputSignal.plotItem.getViewBox().scaleBy((factor, 1))
+       
     def generateSignal(self, magnitudes):
         
         signal = 0

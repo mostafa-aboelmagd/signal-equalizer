@@ -15,9 +15,17 @@ class FFTPlotCanvas(FigureCanvas):
         # Initialize zoom and pan variables
         self.x_min = None
         self.x_max = None
-        self.zoom_factor = 0.1  # 10% zoom per wheel tick
         self.log_scale = False
         self.pan_start_x = None  # For panning
+        self.zoom_factor = 0.1  # 10% zoom
+    
+    # Hide the canvas from within the FFTPlotCanvas class
+    def hideCanvas(self):
+        self.setVisible(False)  # Hides the canvas
+
+    # Show the canvas from within the FFTPlotCanvas class
+    def showCanvas(self):
+        self.setVisible(True)  # Shows the canvas
 
         # Enable mouse tracking and set up Matplotlib event handlers
         self.mpl_connect("button_press_event", self.on_mouse_press)
