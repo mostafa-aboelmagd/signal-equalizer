@@ -1,4 +1,3 @@
-import os
 import sys
 import numpy as np
 import pandas as pd
@@ -21,12 +20,16 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from classes import FileBrowser
+from PyQt5 import QtWidgets
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
 
 class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainApp, self).__init__()
         self.setupUi(self)
+        self.magnitudes = [1] * 10
+        self.sliders = [self.verticalSlider_1, self.verticalSlider_2, self.verticalSlider_3, self.verticalSlider_4, self.verticalSlider_5,
+                        self.verticalSlider_6, self.verticalSlider_7, self.verticalSlider_8, self.verticalSlider_9, self.verticalSlider_10]
         self.setupUI()
         self.retranslateUi(self)
         self.timer = QTimer()
@@ -58,7 +61,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def connectSignals(self):
         """Connect UI signals to their respective slots."""
         # Connect comboBox actions
-        self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
+        #self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
       
         # Connect push buttons
         self.pushButton_playPause.clicked.connect(self.togglePlayPause)
@@ -71,6 +74,12 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
    
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
+        for slider in self.sliders:
+            slider.setMinimum(0)
+            slider.setMaximum(10)
+            slider.setValue(10)
+            slider.setTickInterval(1)
+            slider.valueChanged.connect(self.updateSpectrogram)
         #self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
 
     def setMode(self, mode):
@@ -213,7 +222,20 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             signal+= magnitudes[loopCounter] * np.sin(2* np.pi * i * self.time_values)
             loopCounter +=1
         return signal
+    
+    def showAndHideSpectrogram(self):
+        if self.checkBox_showSpectrogram.isChecked():
+            self.PlotWidget_inputSpectrogram.show()
+            self.PlotWidget_outputSpectrogram.show()
+        else:
+            self.PlotWidget_inputSpectrogram.hide()
+            self.PlotWidget_outputSpectrogram.hide()
+    
+    def updateSpectrogram(self):
+        for i in range(0, 10):
+            self.magnitudes[i] = self.sliders[i].value() / 10.0
         
+        self.PlotWidget_outputSpectrogram.update(self.magnitudes)
     
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
