@@ -1,11 +1,8 @@
 import sys
 import numpy as np
-
 import librosa
- 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTimer
-
 from classes import FileBrowser
 from PyQt5 import QtWidgets
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
@@ -220,14 +217,13 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             currDicts = self.ranges[selected_index]
             loopCounter = 0
             for key in currDicts:
+                self.sliders[shownIndices[loopCounter]].setValue(10)
                 self.labels[shownIndices[loopCounter]].setText(key)
                 loopCounter += 1
             
             self.sliderFrequencyMap = {}
             for i in range(len(shownIndices)):
                 self.sliderFrequencyMap[self.sliders[shownIndices[i]]] = currDicts[self.labels[shownIndices[i]].text()]
-       
-    
     
     def getMappedSliderValue(self, slider_value):
         """Get the mapped value of the slider."""
