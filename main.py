@@ -80,6 +80,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.comboBox_modeSelection.currentIndexChanged.connect(self.changeMode)
         self.timer.timeout.connect(self.plotSignal_timeDomain)
         self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
+        self.comboBox_frequencyScale.activated.connect(self.set_log_scale)
    
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
@@ -92,6 +93,13 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def plot_frequency_domain(self):
         self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal, self.sampling_rate)
+    
+    def set_log_scale(self):
+        if self.comboBox_frequencyScale.currentIndex() == 0:
+            self.PlotWidget_fourier.log_scale = False
+        else:
+            self.PlotWidget_fourier.log_scale = True
+        self.plot_frequency_domain()
 
     # def load_audio(self):
     #     file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
