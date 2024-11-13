@@ -38,7 +38,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.retranslateUi(self)
         self.timer = QTimer()
         self.isPaused = False
-        self.sampling_rate = 0
+        self.sampling_rate = 1000
         self.chunksize = 10
         self.curr_ptr = 0
         self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
@@ -46,11 +46,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.signal = self.generateSignal(magnitudes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         self.modified_signal = self.signal
         self.timer.start(100)
-        
-        
         self.connectSignals()
-        self.sample_rate = 44100  # Default sample rate
-        self.signal = np.zeros(44100)  # Default empty signal (1 second of silence)
         self.plot_frequency_domain()
 
     def setupUI(self):
@@ -74,6 +70,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
         self.comboBox_modeSelection.currentIndexChanged.connect(self.updateNumOfSliders)
         self.timer.timeout.connect(self.plotSignal_timeDomain)
+        self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
    
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
@@ -85,22 +82,22 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             slider.valueChanged.connect(self.updateOutput)
 
     def plot_frequency_domain(self):
-        self.PlotWidget_fourier.plot_frequency_domain(self.signal, self.sample_rate)
+        self.PlotWidget_fourier.plot_frequency_domain(self.signal, self.sampling_rate)
 
-    def load_audio(self):
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
-        if file_name:
-            try: 
-                # Load audio file
-                self.signal, self.sample_rate = sf.read(file_name)
+    # def load_audio(self):
+    #     file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
+    #     if file_name:
+    #         try: 
+    #             # Load audio file
+    #             self.signal, self.sample_rate = sf.read(file_name)
                 
-                # If stereo, take only one channel
-                if self.signal.ndim > 1:
-                    self.signal = self.signal[:, 0]
+    #             # If stereo, take only one channel
+    #             if self.signal.ndim > 1:
+    #                 self.signal = self.signal[:, 0]
                 
-                print(f"Loaded {file_name} with sample rate {self.sample_rate} Hz")
-            except Exception as e:
-                print(f"Failed to load audio: {e}")
+    #             print(f"Loaded {file_name} with sample rate {self.sample_rate} Hz")
+    #         except Exception as e:
+    #             print(f"Failed to load audio: {e}")
 
         #self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
 
@@ -119,6 +116,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.time_values = np.linspace(0, 10, len(self.signal))
         #self.plotSignal_timeDomain()
         self.timer.start(100)
+        self.plot_frequency_domain()
         
 
     def plotSignal_timeDomain(self):
