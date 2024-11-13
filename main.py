@@ -1,4 +1,3 @@
-import os
 import sys
 import numpy as np
 import pandas as pd
@@ -26,6 +25,9 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainApp, self).__init__()
         self.setupUi(self)
+        self.magnitudes = [1] * 10
+        self.sliders = [self.verticalSlider_1, self.verticalSlider_2, self.verticalSlider_3, self.verticalSlider_4, self.verticalSlider_5,
+                        self.verticalSlider_6, self.verticalSlider_7, self.verticalSlider_8, self.verticalSlider_9, self.verticalSlider_10]
         self.setupUI()
         self.connectSignals()
         self.sample_rate = 44100  # Default sample rate
@@ -44,98 +46,23 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def connectSignals(self):
         """Connect UI signals to their respective slots."""
         # Connect comboBox actions
-        self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
+        #self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
       
         # Connect push buttons
-        self.pushButton_playPause.clicked.connect(self.togglePlayPause)
-        self.pushButton_zoomIn.clicked.connect(lambda: self.zoom(0.5))
-        self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(2))
-        self.pushButton_reset.clicked.connect(lambda: self.stopAndReset(True))
-        self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
+        #self.pushButton_playPause.clicked.connect(self.togglePlayPause)
+        #self.pushButton_zoomIn.clicked.connect(lambda: self.zoom(0.5))
+        #self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(2))
+        #self.pushButton_reset.clicked.connect(lambda: self.stopAndReset(True))
+        #self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
    
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
-        self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
-
-    def setMode(self, mode):
-        """Set the mode of the application."""
-        pass
-
-    def uploadAndPlotSignal(self):
-        """Upload and plot the signal."""
-        pass
-
-    def plotSignal_timeDomain(self, audio, audioSamplingRate, signal, widget):
-        """Plot the signal in the time domain."""
-        pass
-
-    def plotSpectrogram(self, fig, canvas, audio, audioSamplingRate, signal):
-        """Plot the spectrogram of the signal."""
-        pass
-
-    def plotFrequencySpectrum(self):
-        """Plot the frequency spectrum of the signal."""
-        pass
-
-    def computeFourierTransform(self):
-        """Compute the Fourier transform"""
-        pass
-
-    def computeFourierTransform(self):
-        """Compute the Fourier transform of the signal."""
-        pass
-
-    def invFourierTransform(self, magnitude, phase):
-        """Compute the inverse Fourier transform."""
-        pass
-
-    def setFrequencyScale(self):
-        """Set the smoothing window."""
-        pass
-
-    def setWindowParameters(self):
-        """Set the parameters for the smoothing window."""
-        pass
-
-    def getMappedSliderValue(self, slider_value):
-        """Get the mapped value of the slider."""
-        pass
-
-    def generateWindow(self, sliderNumber, Value):
-        """Generate the window for smoothing."""
-        pass
-
-    def applySmoothingWindow(self, gainList, targetBand):
-        """Apply the smoothing window."""
-        pass
-
-    def togglePlayPause(self):
-        """Toggle play/pause of the signal."""
-        pass
-
-    def setSpeed(self, speed):
-        """Set the playback speed."""
-        pass
-
-    def stopAndReset(self, reset):
-        """Stop and reset the signal."""
-        pass
-
-    def zoom(self, factor):
-        """Zoom in or out on the signal."""
-        pass
-
-    def showAndHideSpectrogram(self, state):
-        """Show or hide the spectrogram."""
-        pass
-
-    def get_min_max_for_widget(self, widget, data_type):
-        """Get the min and max values for the widget."""
-        pass
-
-    def clearAll(self):
-        """Clear all data and reset the UI."""
-        pass
+        for slider in self.sliders:
+            slider.setMinimum(0)
+            slider.setMaximum(10)
+            slider.setValue(10)
+            slider.setTickInterval(1)
+            slider.valueChanged.connect(self.updateSpectrogram)
 
     def plot_frequency_domain(self):
         self.PlotWidget_fourier.plot_frequency_domain(self.signal, self.sample_rate)
@@ -155,6 +82,22 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             except Exception as e:
                 print(f"Failed to load audio: {e}")
 
+        #self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
+    
+    def showAndHideSpectrogram(self):
+        if self.checkBox_showSpectrogram.isChecked():
+            self.PlotWidget_inputSpectrogram.show()
+            self.PlotWidget_outputSpectrogram.show()
+        else:
+            self.PlotWidget_inputSpectrogram.hide()
+            self.PlotWidget_outputSpectrogram.hide()
+    
+    def updateSpectrogram(self):
+        for i in range(0, 10):
+            self.magnitudes[i] = self.sliders[i].value() / 10.0
+        
+        self.PlotWidget_outputSpectrogram.update(self.magnitudes)
+    
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = MainApp()
