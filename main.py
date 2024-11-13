@@ -74,13 +74,15 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
       
         # Connect push buttons
         self.pushButton_playPause.clicked.connect(self.togglePlayPause)
-        self.pushButton_zoomIn.clicked.connect(lambda: self.zoom(0.5))
-        self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(2))
+        self.pushButton_zoomIn.clicked.connect(lambda: self.zoom(0.8))
+        self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(1.2))
         self.pushButton_reset.clicked.connect(lambda: self.stopAndReset(True))
         self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
         self.comboBox_modeSelection.currentIndexChanged.connect(self.changeMode)
         self.timer.timeout.connect(self.plotSignal_timeDomain)
         self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
+        self.speedSlider.valueChanged.connect(self.setSpeed)
+
    
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
@@ -247,17 +249,31 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.timer.stop()
             
 
+    
+
     def setSpeed(self, speed):
         """Set the playback speed."""
-        pass
+        self.timer.setInterval(int(100 / speed))
 
     def stopAndReset(self, reset):
         """Stop and reset the signal."""
-        pass
+        self.timer.stop()
+        self.isPaused = True
+        if reset:
+            self.curr_ptr = 0
+            self.left_x_view = 0
+            self.PlotWidget_inputSignal.clear()
+            self.PlotWidget_outputSignal.clear()
+            self.isPaused = False
+            self.timer.start(100)
+
+         
 
     def zoom(self, factor):
         """Zoom in or out on the signal."""
-        pass
+        self.PlotWidget_inputSignal.plotItem.getViewBox().scaleBy((factor, 1))
+        # self.PlotWidget_outputSignal.plotItem.getViewBox().scaleBy((factor, 1))
+       
 
     def showAndHideSpectrogram(self, state):
         """Show or hide the spectrogram."""
