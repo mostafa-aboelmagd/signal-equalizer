@@ -79,7 +79,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.plotSignal_timeDomain)
         self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
         self.speedSlider.valueChanged.connect(self.setSpeed)
-
    
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
@@ -93,26 +92,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def plot_frequency_domain(self):
         self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal, self.sampling_rate)
 
-    # def load_audio(self):
-    #     file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
-    #     if file_name:
-    #         try: 
-    #             # Load audio file
-    #             self.signal, self.sample_rate = sf.read(file_name)
-                
-    #             # If stereo, take only one channel
-    #             if self.signal.ndim > 1:
-    #                 self.signal = self.signal[:, 0]
-                
-    #             print(f"Loaded {file_name} with sample rate {self.sample_rate} Hz")
-    #         except Exception as e:
-    #             print(f"Failed to load audio: {e}")
-
-        #self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
-
-    def setMode(self, mode):
-        """Set the mode of the application."""
-        pass
 
     def uploadAndPlotSignal(self):
         """Upload and plot the signal."""
@@ -224,16 +203,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.sliderFrequencyMap = {}
             for i in range(len(shownIndices)):
                 self.sliderFrequencyMap[self.sliders[shownIndices[i]]] = currDicts[self.labels[shownIndices[i]].text()]
-    
-    def getMappedSliderValue(self, slider_value):
-        """Get the mapped value of the slider."""
-        selected_index = self.comboBox_modeSelection.currentIndex()
-        if selected_index == 0:
-            pass
-        
-        else:
-            pass
-
 
     def togglePlayPause(self):
         """Toggle play/pause of the signal."""
@@ -244,8 +213,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.isPaused = True
             self.timer.stop()
             
-
-    
 
     def setSpeed(self, speed):
         """Set the playback speed."""
@@ -261,25 +228,13 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.PlotWidget_inputSignal.clear()
             self.PlotWidget_outputSignal.clear()
             self.isPaused = False
-            self.timer.start(100)
-
-         
+            self.timer.start(100)         
 
     def zoom(self, factor):
         """Zoom in or out on the signal."""
         self.PlotWidget_inputSignal.plotItem.getViewBox().scaleBy((factor, 1))
         # self.PlotWidget_outputSignal.plotItem.getViewBox().scaleBy((factor, 1))
        
-
-    def showAndHideSpectrogram(self, state):
-        """Show or hide the spectrogram."""
-        pass
-
-   
-    def clearAll(self):
-        """Clear all data and reset the UI."""
-        pass
-
     def generateSignal(self, magnitudes):
         
         signal = 0
