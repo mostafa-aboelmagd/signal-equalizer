@@ -10,6 +10,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from classes import Spectrogram
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -1225,6 +1227,11 @@ class Ui_MainWindow(object):
         self.groupBox_4.setFlat(True)
         self.groupBox_4.setObjectName("groupBox_4")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.groupBox_4)
+        self.PlotWidget_inputSpectrogram = Spectrogram()
+        group_layout = QtWidgets.QVBoxLayout(self.groupBox_4)
+        group_layout.addWidget(self.PlotWidget_inputSpectrogram)
+        self.groupBox_4.setLayout(group_layout)
+        self.gridLayout_2.addWidget(self.PlotWidget_inputSpectrogram, 0, 1, 1, 1)
         self.gridLayout_2.setContentsMargins(-1, 20, 15, -1)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.gridLayout_9.addWidget(self.groupBox_4, 0, 1, 1, 1)
@@ -1282,6 +1289,11 @@ class Ui_MainWindow(object):
         self.groupBox_8.setAlignment(QtCore.Qt.AlignCenter)
         self.groupBox_8.setObjectName("groupBox_8")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.groupBox_8)
+        self.PlotWidget_outputSpectrogram = Spectrogram()
+        group_layout_2 = QtWidgets.QVBoxLayout(self.groupBox_8)
+        group_layout_2.addWidget(self.PlotWidget_outputSpectrogram)
+        self.groupBox_8.setLayout(group_layout_2)
+        self.gridLayout_4.addWidget(self.PlotWidget_outputSpectrogram, 0, 1, 1, 1)
         self.gridLayout_4.setContentsMargins(-1, 20, 50, -1)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.gridLayout_10.addWidget(self.groupBox_8, 0, 1, 1, 1)
