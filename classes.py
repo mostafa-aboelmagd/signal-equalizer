@@ -32,15 +32,15 @@ class Spectrogram(QWidget):
             self.magnitudes = [1] * 4
             self.fs = 5000
             
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
         self.fig, self.ax = plt.subplots(figsize=(8, 6))   # Set up the matplotlib plot for the spectrogram
-        layout.addWidget(self.fig.canvas)
+        self.layout.addWidget(self.fig.canvas)
 
         self.cax = None         # Needed for initial colorbar creation
         self.plotSpectrogram(self.signal, self.fs, self.ax, self.cax)
         
-        self.setLayout(layout)
-        self.show()
+        self.setLayout(self.layout)
+        #self.show()
 
     def plotSpectrogram(self, signal, fs, ax, cax):
         #The signal is divided into overlapping segments, and for each segment, an FFT is computed
@@ -73,6 +73,14 @@ class Spectrogram(QWidget):
     
     def hideSpectrogram(self):
         self.hide()
+    
+    def resetSpectrogram(self):
+        # Remove the old spectrogram from the layout
+        self.layout.removeWidget(self)
+        self.deleteLater()  # Schedule this widget for deletion
+        
+        # Reinitialize the spectrogram object as a new one
+        self.__init__()
 
     def generateSignal(self, magnitudes): # Generate sin signal for uniform range mode
         signal = 0
