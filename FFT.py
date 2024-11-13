@@ -16,6 +16,14 @@ class FFTPlotCanvas(FigureCanvas):
         self.x_min = None
         self.x_max = None
         self.zoom_factor = 0.1  # 10% zoom
+    
+    # Hide the canvas from within the FFTPlotCanvas class
+    def hideCanvas(self):
+        self.setVisible(False)  # Hides the canvas
+
+    # Show the canvas from within the FFTPlotCanvas class
+    def showCanvas(self):
+        self.setVisible(True)  # Shows the canvas
 
     def plot_time_domain(self, signal, sample_rate):
         self.ax.clear()

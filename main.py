@@ -15,7 +15,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.sliders = [self.verticalSlider_1, self.verticalSlider_2, self.verticalSlider_3, self.verticalSlider_4, self.verticalSlider_5,
                         self.verticalSlider_6, self.verticalSlider_7, self.verticalSlider_8, self.verticalSlider_9, self.verticalSlider_10]
         self.labels = [self.label_1_Hz, self.label_2_Hz, self.label_3_Hz, self.label_4_Hz, self.label_5_Hz, self.label_6_Hz,
-                       self.label_7_Hz, self.label_8_HZ, self.label_9_Hz, self.label_10_Hz]
+                       self.label_7_Hz, self.label_8_Hz, self.label_9_Hz, self.label_10_Hz]
         self.setupUI()
         self.retranslateUi(self)
         self.timer = QTimer()
@@ -148,6 +148,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         selected_index = self.comboBox_modeSelection.currentIndex()
         if selected_index == 0:
             self.startDefault()
+            self.PlotWidget_fourier.showCanvas()
             self.verticalSlider_1.show()
             self.verticalSlider_2.show()
             self.verticalSlider_3.show()
@@ -175,6 +176,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.PlotWidget_inputSignal.clear()
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
+            self.PlotWidget_fourier.hideCanvas()
             self.isPaused = True
             
             self.verticalSlider_1.hide()

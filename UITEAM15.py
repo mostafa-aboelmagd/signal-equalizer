@@ -1420,15 +1420,15 @@ class Ui_MainWindow(object):
         self.verticalSlider_8.setTickInterval(25)
         self.verticalSlider_8.setObjectName("verticalSlider_8")
         self.gridLayout_21.addWidget(self.verticalSlider_8, 0, 0, 1, 1)
-        self.label_8_HZ = QtWidgets.QLabel(self.groupBox)
+        self.label_8_Hz = QtWidgets.QLabel(self.groupBox)
         font = QtGui.QFont()
         font.setFamily("Yu Gothic UI Semibold")
         font.setPointSize(8)
-        self.label_8_HZ.setFont(font)
-        self.label_8_HZ.setStyleSheet("color : rgb(2, 65, 132);")
-        self.label_8_HZ.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_8_HZ.setObjectName("label_8_HZ")
-        self.gridLayout_21.addWidget(self.label_8_HZ, 1, 0, 1, 1)
+        self.label_8_Hz.setFont(font)
+        self.label_8_Hz.setStyleSheet("color : rgb(2, 65, 132);")
+        self.label_8_Hz.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_8_Hz.setObjectName("label_8_HZ")
+        self.gridLayout_21.addWidget(self.label_8_Hz, 1, 0, 1, 1)
         self.gridLayout_31.addLayout(self.gridLayout_21, 0, 7, 1, 1)
         self.gridLayout_23 = QtWidgets.QGridLayout()
         self.gridLayout_23.setObjectName("gridLayout_23")
@@ -2297,7 +2297,7 @@ class Ui_MainWindow(object):
         self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_7.hide) # type: ignore
         self.actionECG_Abnormalities.triggered['bool'].connect(self.label_7_Hz.hide) # type: ignore
         self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_8_HZ.show) # type: ignore
+        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
         self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
         self.actionECG_Abnormalities.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
         self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
@@ -2317,7 +2317,7 @@ class Ui_MainWindow(object):
         self.actionMusical.triggered['bool'].connect(self.verticalSlider_7.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.label_7_Hz.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
-        self.actionMusical.triggered['bool'].connect(self.label_8_HZ.show) # type: ignore
+        self.actionMusical.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
@@ -2337,7 +2337,7 @@ class Ui_MainWindow(object):
         self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_7.show) # type: ignore
         self.actionAnimal_Sounds.triggered['bool'].connect(self.label_7_Hz.show) # type: ignore
         self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_8_HZ.show) # type: ignore
+        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
         self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
         self.actionAnimal_Sounds.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
         self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
@@ -2357,7 +2357,7 @@ class Ui_MainWindow(object):
         self.actionUniform.triggered['bool'].connect(self.verticalSlider_7.show) # type: ignore
         self.actionUniform.triggered['bool'].connect(self.label_7_Hz.show) # type: ignore
         self.actionUniform.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_8_HZ.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
         self.actionUniform.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
         self.actionUniform.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
         self.actionUniform.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
@@ -2382,7 +2382,7 @@ class Ui_MainWindow(object):
         self.label_15.setText(_translate("MainWindow", "20 dB"))
         self.label_17.setText(_translate("MainWindow", "-10 dB"))
         self.label_10_Hz.setText(_translate("MainWindow", "##Hz"))
-        self.label_8_HZ.setText(_translate("MainWindow", "##Hz"))
+        self.label_8_Hz.setText(_translate("MainWindow", "##Hz"))
         self.label_6_Hz.setText(_translate("MainWindow", "##Hz"))
         self.label_5_Hz.setText(_translate("MainWindow", "##Hz"))
         self.label_4_Hz.setText(_translate("MainWindow", "##Hz"))
