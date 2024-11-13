@@ -15,9 +15,15 @@ class FFTPlotCanvas(FigureCanvas):
         # Initialize zoom and pan variables
         self.x_min = None
         self.x_max = None
-        self.log_scale = False
+        self.log_scale = False  # Linear scale by default
         self.pan_start_x = None  # For panning
         self.zoom_factor = 0.1  # 10% zoom
+        
+        # Enable mouse tracking and set up Matplotlib event handlers
+        self.mpl_connect("button_press_event", self.on_mouse_press)
+        self.mpl_connect("motion_notify_event", self.on_mouse_move)
+        self.mpl_connect("button_release_event", self.on_mouse_release)
+        self.mpl_connect("scroll_event", self.on_mouse_scroll)
     
     # Hide the canvas from within the FFTPlotCanvas class
     def hideCanvas(self):
@@ -27,11 +33,6 @@ class FFTPlotCanvas(FigureCanvas):
     def showCanvas(self):
         self.setVisible(True)  # Shows the canvas
 
-        # Enable mouse tracking and set up Matplotlib event handlers
-        self.mpl_connect("button_press_event", self.on_mouse_press)
-        self.mpl_connect("motion_notify_event", self.on_mouse_move)
-        self.mpl_connect("button_release_event", self.on_mouse_release)
-        self.mpl_connect("scroll_event", self.on_mouse_scroll)
 
     def plot_frequency_domain(self, signal, sample_rate):
         self.ax.clear()
@@ -75,7 +76,8 @@ class FFTPlotCanvas(FigureCanvas):
         if self.pan_start_x is not None and event.xdata is not None:
             # Calculate the delta to move the plot
             if self.log_scale:
-                delta_x = (np.log10(self.pan_start_x) - np.log10(event.xdata))
+                delta_x = (self.pan_start_x - event.xdata)*0.3
+
             else: 
                 delta_x = (self.pan_start_x - event.xdata)
             self.pan_start_x = event.xdata
@@ -121,8 +123,8 @@ class FFTPlotCanvas(FigureCanvas):
         new_x_max = mouse_x + (self.x_max - mouse_x) * scale_factor
 
         # Ensure limits stay within the valid frequency range
-        if new_x_min < 20:
-            new_x_min = 20
+        if new_x_min < 1:
+            new_x_min = 1
         if new_x_max > 20000:
             new_x_max = 20000
 
