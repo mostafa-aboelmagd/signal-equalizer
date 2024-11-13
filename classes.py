@@ -62,8 +62,8 @@ class Spectrogram(QWidget):
     def generateSignal(self, magnitudes): # Generate sin signal for uniform range mode
         signal = 0
         loopCounter = 0
-        for i in range(10, 110, 10):
-            signal += magnitudes[loopCounter] * np.sin(2 * np.pi * i * self.t)
+        for freq in range(10, 110, 10):
+            signal += magnitudes[loopCounter] * np.sin(2 * np.pi * freq * self.t)
             loopCounter += 1
         
         return signal
