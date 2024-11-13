@@ -1,5 +1,23 @@
 import sys
 import numpy as np
+import pandas as pd
+import soundfile as sf
+import scipy
+from scipy import signal
+import matplotlib.pyplot as plt
+import plotly.graph_objs as go
+import plotly.offline as pyo
+import copy
+ 
+from PyQt5 import QtWidgets, QtCore, uic
+from PyQt5.QtWidgets import QMessageBox, QApplication, QVBoxLayout, QWidget , QFileDialog
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QIcon
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+
 import librosa
  
 from PyQt5 import QtWidgets
@@ -20,13 +38,11 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUI()
         self.retranslateUi(self)
         self.timer = QTimer()
-        self.isPaused = False
-        self.sampling_rate = 0
-        self.chunksize = 10
-        self.curr_ptr = 0
-        self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
+        
         self.startDefault()
         self.connectSignals()
+        self.plot_frequency_domain()
+
 
     def setupUI(self):
         """Setup UI elements and initial configurations."""
@@ -35,12 +51,10 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.outputViewBox = self.PlotWidget_outputSignal.getViewBox()
         self.inputViewBox.setXLink(self.outputViewBox)
         self.inputViewBox.setYLink(self.outputViewBox)
-        self.PlotWidget_fourier.setLabel('left', 'Magnitude')
-        self.PlotWidget_fourier.setLabel('bottom', 'Frequency')
     
     def startDefault(self):
         self.isPaused = False
-        self.sampling_rate = 0
+        self.sampling_rate = 1000
         self.chunksize = 10
         self.curr_ptr = 0
         self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
@@ -65,6 +79,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
         self.comboBox_modeSelection.currentIndexChanged.connect(self.changeMode)
         self.timer.timeout.connect(self.plotSignal_timeDomain)
+        self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
    
         # Connect other UI elements
         self.checkBox_showSpectrogram.stateChanged.connect(self.showAndHideSpectrogram)
@@ -74,6 +89,25 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             slider.setValue(10)
             slider.setTickInterval(1)
             slider.valueChanged.connect(self.updateOutput)
+
+    def plot_frequency_domain(self):
+        self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal, self.sampling_rate)
+
+    # def load_audio(self):
+    #     file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
+    #     if file_name:
+    #         try: 
+    #             # Load audio file
+    #             self.signal, self.sample_rate = sf.read(file_name)
+                
+    #             # If stereo, take only one channel
+    #             if self.signal.ndim > 1:
+    #                 self.signal = self.signal[:, 0]
+                
+    #             print(f"Loaded {file_name} with sample rate {self.sample_rate} Hz")
+    #         except Exception as e:
+    #             print(f"Failed to load audio: {e}")
+
         #self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
 
     def setMode(self, mode):
@@ -91,6 +125,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.time_values = np.linspace(0, 10, len(self.signal))
         #self.plotSignal_timeDomain()
         self.timer.start(100)
+        self.plot_frequency_domain()
         
 
     def plotSignal_timeDomain(self):
@@ -109,9 +144,9 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.PlotWidget_outputSignal.plot(self.segment_x, self.segment_y_op, pen = 'b')
 
             
-            if self.curr_ptr + self.chunksize <= len(self.signal):
+            if self.curr_ptr + self.chunksize < len(self.signal):
                 self.curr_ptr += self.chunksize
-                if self.time_values[self.curr_ptr + self.chunksize] > self.left_x_view + 1:
+                if self.time_values[self.curr_ptr] > self.left_x_view + 1:
                     self.left_x_view += 1
                 
             else:
@@ -249,6 +284,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.togglePlayPause()
 
         self.PlotWidget_outputSpectrogram.update(self.magnitudes)
+        self.plot_frequency_domain()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
