@@ -1,23 +1,9 @@
 import sys
 import numpy as np
-import pandas as pd
-import soundfile as sf
-import scipy
-from scipy import signal
-import matplotlib.pyplot as plt
-import plotly.graph_objs as go
-import plotly.offline as pyo
-import copy
 import librosa
  
-from PyQt5 import QtWidgets, QtCore, uic
-from PyQt5.QtWidgets import QMessageBox, QApplication, QVBoxLayout, QWidget
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl, QTimer, Qt
-from PyQt5.QtGui import QIcon, QStandardItem, QStandardItemModel
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QTimer
 
 from classes import FileBrowser
 from PyQt5 import QtWidgets
@@ -79,7 +65,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             slider.setMaximum(10)
             slider.setValue(10)
             slider.setTickInterval(1)
-            slider.valueChanged.connect(self.updateSpectrogram)
+            slider.valueChanged.connect(self.updateOutput)
         #self.comboBox_frequencyScale.activated.connect(self.setFrequencyScale)
 
     def setMode(self, mode):
@@ -231,11 +217,19 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.PlotWidget_inputSpectrogram.hide()
             self.PlotWidget_outputSpectrogram.hide()
     
-    def updateSpectrogram(self):
+    def updateOutput(self):
         for i in range(0, 10):
             self.magnitudes[i] = self.sliders[i].value() / 10.0
+                
+        self.modified_signal = 0
+        loopCounter = 0
+        for i in range(10, 110, 10):
+            self.modified_signal += self.magnitudes[loopCounter] * np.sin(2* np.pi * i * self.time_values)
+            loopCounter +=1
+        
         
         self.PlotWidget_outputSpectrogram.update(self.magnitudes)
+        #self.timer.start()
     
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

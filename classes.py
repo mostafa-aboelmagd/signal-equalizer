@@ -1,11 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
-import copy
-from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QFileDialog
+import librosa
 
-class FileBrowser(Ui_MainWindow):
+class FileBrowser:
     global player
     def __init__(self, parent = None):
         self.parent = parent
