@@ -1,22 +1,5 @@
 import sys
 import numpy as np
-import pandas as pd
-import soundfile as sf
-import scipy
-from scipy import signal
-import matplotlib.pyplot as plt
-import plotly.graph_objs as go
-import plotly.offline as pyo
-import copy
- 
-from PyQt5 import QtWidgets, QtCore, uic
-from PyQt5.QtWidgets import QMessageBox, QApplication, QVBoxLayout, QWidget , QFileDialog
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QIcon
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
 
 import librosa
  
@@ -26,7 +9,6 @@ from PyQt5.QtCore import QTimer
 from classes import FileBrowser
 from PyQt5 import QtWidgets
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
-import classes
 
 class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
