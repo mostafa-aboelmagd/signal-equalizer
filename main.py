@@ -31,6 +31,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.connectSignals()
         self.sample_rate = 44100  # Default sample rate
         self.signal = np.zeros(44100)  # Default empty signal (1 second of silence)
+        self.plot_frequency_domain()
 
     def setupUI(self):
         """Setup UI elements and initial configurations."""

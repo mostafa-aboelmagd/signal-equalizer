@@ -30,7 +30,6 @@ class FFTPlotCanvas(FigureCanvas):
         freq_bins = np.fft.fftfreq(N, d=1 / sample_rate)[:N // 2]
 
         self.ax.plot(freq_bins, freq_magnitude, 'r')
-        self.ax.set_title("Frequency Domain Signal")
         self.ax.set_xlabel("Frequency [Hz]")
         self.ax.set_ylabel("Magnitude")
         self.ax.grid(True)
