@@ -14,8 +14,8 @@ import librosa
 from PyQt5 import QtWidgets, QtCore, uic
 from PyQt5.QtWidgets import QMessageBox, QApplication, QVBoxLayout, QWidget
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl, QTimer
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QUrl, QTimer, Qt
+from PyQt5.QtGui import QIcon, QStandardItem, QStandardItemModel
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -30,14 +30,17 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUI()
         self.retranslateUi(self)
         self.timer = QTimer()
-        self.signal = []
-        self.modified_signal = []
+        self.isPaused = False
         self.sampling_rate = 0
         self.chunksize = 10
         self.curr_ptr = 0
-        self.segment_end = 0
-        self.right_x_limit = 4
-        self.isPaused = False
+        self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
+        self.time_values = np.linspace(0, 1, 1000)
+        self.signal = self.generateSignal(magnitudes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        self.modified_signal = self.signal
+        self.timer.start(100)
+        
+        
         self.connectSignals()
         
         
@@ -63,6 +66,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_zoomOut.clicked.connect(lambda: self.zoom(2))
         self.pushButton_reset.clicked.connect(lambda: self.stopAndReset(True))
         self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
+        self.comboBox_modeSelection.currentIndexChanged.connect(self.updateNumOfSliders)
         self.timer.timeout.connect(self.plotSignal_timeDomain)
    
         # Connect other UI elements
@@ -90,12 +94,16 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """Plot the signal in the time domain."""
         if len(self.signal) > 0 and self.isPaused == False:
             # taking chunks from the signal and the corresponding time values
-            segment_y = self.signal[self.curr_ptr : self.curr_ptr + self.chunksize]   # from index "curr_ptr" to index "curr_ptr + chunksize"
+            segment_y_ip = self.signal[self.curr_ptr : self.curr_ptr + self.chunksize]   # from index "curr_ptr" to index "curr_ptr + chunksize"
+            segment_y_op = self.modified_signal[self.curr_ptr : self.curr_ptr + self.chunksize]
             segment_x = self.time_values[ self.curr_ptr : self.curr_ptr + self.chunksize]  # same in time values stored for the signal
             
             self.PlotWidget_inputSignal.plotItem.setYRange(-0.5, 0.5)
             self.PlotWidget_inputSignal.plotItem.setXRange(self.left_x_view, self.left_x_view + 1)
-            self.PlotWidget_inputSignal.plot(segment_x, segment_y, pen = 'r')
+            self.PlotWidget_outputSignal.plotItem.setYRange(-0.5, 0.5)
+            self.PlotWidget_outputSignal.plotItem.setXRange(self.left_x_view, self.left_x_view + 1)
+            self.PlotWidget_inputSignal.plot(segment_x, segment_y_ip, pen = 'r')
+            self.PlotWidget_outputSignal.plot(segment_x, segment_y_op, pen = 'b')
             
             
             if self.curr_ptr + self.chunksize <= len(self.signal):
@@ -130,14 +138,40 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.modified_signal = librosa.istft(self.modified_fft_data)
         
 
-    def updateNumOfSliders (self, mode = 'uniform'):
-        pass
-    
+    def updateNumOfSliders (self):
+        selected_index = self.comboBox_modeSelection.currentIndex()
+
+        if selected_index == 0:
+            self.verticalSlider_1.show()
+            self.verticalSlider_2.show()
+            self.verticalSlider_3.show()
+            self.verticalSlider_4.show()
+            self.verticalSlider_5.show()
+            self.verticalSlider_6.show()
+            self.verticalSlider_7.show()
+            self.verticalSlider_8.show()
+            self.verticalSlider_9.show()
+            self.verticalSlider_10.show()
+            
+        else:
+            
+            self.verticalSlider_1.hide()
+            self.verticalSlider_3.hide()
+            self.verticalSlider_5.hide()
+            self.verticalSlider_7.hide()
+            self.verticalSlider_9.hide()
+            self.verticalSlider_10.hide()
+       
     
     
     def getMappedSliderValue(self, slider_value):
         """Get the mapped value of the slider."""
-        pass
+        selected_index = self.comboBox_modeSelection.currentIndex()
+        if selected_index == 0:
+            pass
+        
+        else:
+            pass
 
 
     def togglePlayPause(self):
@@ -166,14 +200,21 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         """Show or hide the spectrogram."""
         pass
 
-    def get_min_max_for_widget(self, widget, data_type):
-        """Get the min and max values for the widget."""
-        pass
-
+   
     def clearAll(self):
         """Clear all data and reset the UI."""
         pass
 
+    def generateSignal(self, magnitudes):
+        
+        signal = 0
+        loopCounter = 0
+        for i in range(10, 110, 10):
+            signal+= magnitudes[loopCounter] * np.sin(2* np.pi * i * self.time_values)
+            loopCounter +=1
+        return signal
+        
+    
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = MainApp()
