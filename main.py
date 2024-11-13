@@ -18,7 +18,6 @@ from PyQt5.QtGui import QIcon
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-from classes import FileBrowser
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
 
 class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -40,8 +39,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.outputViewBox = self.PlotWidget_outputSignal.getViewBox()
         self.inputViewBox.setXLink(self.outputViewBox)
         self.inputViewBox.setYLink(self.outputViewBox)
-        self.PlotWidget_fourier.setLabel('left', 'Magnitude')
-        self.PlotWidget_fourier.setLabel('bottom', 'Frequency')
 
     def connectSignals(self):
         """Connect UI signals to their respective slots."""
