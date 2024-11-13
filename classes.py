@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
-import sys
 
 class Spectrogram(QWidget):
     def __init__(self, signal=None):
@@ -49,7 +48,8 @@ class Spectrogram(QWidget):
     
         plt.draw()
     
-    def update(self): # Update the spectrogram after slider value changes
+    def update(self, magnitudes): # Update the spectrogram after slider value changes
+        self.magnitudes = magnitudes
         self.signal = self.generateSignal(self.magnitudes)
         self.plotSpectrogram(self.signal, self.fs, self.ax, self.cax)
     

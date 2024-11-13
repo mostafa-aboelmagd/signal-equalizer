@@ -1362,6 +1362,7 @@ class Ui_MainWindow(object):
         self.comboBox_frequencyScale.addItem("")
         self.gridLayout_19.addWidget(self.comboBox_frequencyScale, 1, 0, 1, 1)
         self.checkBox_showSpectrogram = QtWidgets.QCheckBox(self.groupBox_6)
+        self.checkBox_showSpectrogram.setChecked(True)
         font = QtGui.QFont()
         font.setFamily("Segoe UI Semibold")
         font.setPointSize(16)
