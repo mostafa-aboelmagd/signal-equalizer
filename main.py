@@ -11,7 +11,7 @@ import plotly.offline as pyo
 import copy
  
 from PyQt5 import QtWidgets, QtCore, uic
-from PyQt5.QtWidgets import QMessageBox, QApplication, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QMessageBox, QApplication, QVBoxLayout, QWidget , QFileDialog
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon
@@ -28,6 +28,8 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setupUI()
         self.connectSignals()
+        self.sample_rate = 44100  # Default sample rate
+        self.signal = np.zeros(44100)  # Default empty signal (1 second of silence)
 
     def setupUI(self):
         """Setup UI elements and initial configurations."""
@@ -134,6 +136,24 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def clearAll(self):
         """Clear all data and reset the UI."""
         pass
+
+    def plot_frequency_domain(self):
+        self.PlotWidget_fourier.plot_frequency_domain(self.signal, self.sample_rate)
+
+    def load_audio(self):
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
+        if file_name:
+            try: 
+                # Load audio file
+                self.signal, self.sample_rate = sf.read(file_name)
+                
+                # If stereo, take only one channel
+                if self.signal.ndim > 1:
+                    self.signal = self.signal[:, 0]
+                
+                print(f"Loaded {file_name} with sample rate {self.sample_rate} Hz")
+            except Exception as e:
+                print(f"Failed to load audio: {e}")
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import soundfile as sf
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QFileDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(200, 200, 800, 600)
 
         # Initialize variables
+
         self.sample_rate = 44100  # Default sample rate
         self.signal = np.zeros(44100)  # Default empty signal (1 second of silence)
 
@@ -53,7 +54,7 @@ class MainWindow(QMainWindow):
 
         layout = QVBoxLayout(self.main_widget)
 
-        self.canvas = FFTPlotCanvas(self, width=5, height=4, dpi=100)
+        self.canvas = FFTPlotCanvas(self, width=5, height=4, dpi=100) #DONE
         layout.addWidget(self.canvas)
 
         self.plot_time_button = QPushButton("Plot Time Domain")
@@ -75,7 +76,7 @@ class MainWindow(QMainWindow):
         self.canvas.plot_frequency_domain(self.signal, self.sample_rate)
 
     def load_audio(self):
-        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg);;All Files (*)")
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
         if file_name:
             try:
                 # Load audio file

@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from FFT import FFTPlotCanvas
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -1309,7 +1309,7 @@ class Ui_MainWindow(object):
         self.gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_5)
         self.gridLayout_5.setContentsMargins(-1, 20, -1, -1)
         self.gridLayout_5.setObjectName("gridLayout_5")
-        self.PlotWidget_fourier = PlotWidget(self.groupBox_5)
+        self.PlotWidget_fourier = FFTPlotCanvas(self.groupBox_5)
         self.PlotWidget_fourier.setMinimumSize(QtCore.QSize(800, 140))
         self.PlotWidget_fourier.setObjectName("PlotWidget_fourier")
         self.gridLayout_5.addWidget(self.PlotWidget_fourier, 0, 0, 1, 1)
