@@ -93,11 +93,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             slider.valueChanged.connect(self.updateOutput)
 
     def plot_frequency_domain(self):
-        print("        ##############################")
-        print(self.modified_signal.shape)
-        print("        ##############################")
-
-        print(self.sampling_rate)
         self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal, self.sampling_rate)
     
     def set_log_scale(self):
