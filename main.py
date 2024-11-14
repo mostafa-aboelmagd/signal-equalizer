@@ -5,7 +5,9 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTimer
 from classes import FileBrowser
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QFileDialog
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
+import soundfile as sf
 
 class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -77,7 +79,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_stop.clicked.connect(lambda: self.stopAndReset(False))
         self.comboBox_modeSelection.currentIndexChanged.connect(self.changeMode)
         self.timer.timeout.connect(self.plotSignal_timeDomain)
-        self.pushButton_uploadButton.clicked.connect(self.uploadAndPlotSignal)
+        self.pushButton_uploadButton.clicked.connect(self.load_audio)
         self.comboBox_frequencyScale.activated.connect(self.set_log_scale)
         self.speedSlider.valueChanged.connect(self.setSpeed)
    
@@ -91,6 +93,11 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             slider.valueChanged.connect(self.updateOutput)
 
     def plot_frequency_domain(self):
+        print("        ##############################")
+        print(self.modified_signal.shape)
+        print("        ##############################")
+
+        print(self.sampling_rate)
         self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal, self.sampling_rate)
     
     def set_log_scale(self):
@@ -101,18 +108,41 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.plot_frequency_domain()
 
 
-    def uploadAndPlotSignal(self):
-        """Upload and plot the signal."""
-        file_browser = FileBrowser()
-        self.signal, self.sampling_rate = file_browser.browse_file(mode= 'music')
-        #self.plotSignal_timeDomain(self.sampling_rate, self.signal)
-        self.chunksize = 1000
-        self.curr_ptr = 0
-        self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
-        self.time_values = np.linspace(0, 10, len(self.signal))
-        #self.plotSignal_timeDomain()
-        self.timer.start(100)
-        self.plot_frequency_domain()
+    # def uploadAndPlotSignal(self):
+    #     """Upload and plot the signal."""
+    #     file_browser = FileBrowser()
+    #     self.signal, self.sampling_rate = file_browser.browse_file(mode= 'music')
+    #     #self.plotSignal_timeDomain(self.sampling_rate, self.signal)
+    #     self.chunksize = 1000
+    #     self.curr_ptr = 0
+    #     self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
+    #     self.time_values = np.linspace(0, 10, len(self.signal))
+    #     #self.plotSignal_timeDomain()
+    #     self.timer.start(100)
+    #     self.plot_frequency_domain()
+    def load_audio(self):
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open Audio File", "", "Audio Files (*.wav *.flac *.ogg *.mp3);;All Files (*)")
+        if file_name:
+            try:
+                # Load audio file
+                self.signal, self.sampling_rate = sf.read(file_name)
+                print(self.signal.shape)
+                
+                # If stereo, take only one channel
+                if self.signal.ndim > 1:
+                    self.signal = self.signal[:, 0]
+                self.modified_signal = self.signal
+                self.chunksize = 1000
+                self.curr_ptr = 0
+                self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
+                self.time_values = np.linspace(0, len(self.signal)/self.sampling_rate,len(self.signal))
+                #self.plotSignal_timeDomain()
+                self.timer.start(100)
+                self.plot_frequency_domain()
+                
+                print(f"Loaded {file_name} with sample rate {self.sampling_rate} Hz")
+            except Exception as e:
+                print(f"Failed to load audio: {e}")
         
 
     def plotSignal_timeDomain(self):
