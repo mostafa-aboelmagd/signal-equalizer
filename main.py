@@ -287,6 +287,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
     
+    
     def updateOutput(self):
         for i in range(0, 10):
             self.magnitudes[i] = self.sliders[i].value() / 10.0
