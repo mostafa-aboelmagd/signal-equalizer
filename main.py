@@ -199,13 +199,12 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.labels[i].setText(f"{sliderValue} Hz")
                 self.sliders[i].setValue(10)
             self.startDefault()
-            self.PlotWidget_fourier.showCanvas()
 
         else:
             self.defaultMode = False
+            self.PlotWidget_fourier.plot_frequency_domain([])
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
-            self.PlotWidget_fourier.hideCanvas()
             self.isPaused = True
             self.left_x_view = 0 # used in adjusting the left x view of the signal while running in cine mode
             self.right_x_view  = self.left_x_view + 1  # adjusting the right x view
