@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import soundfile as sf
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QFileDialog
+from PyQt5.QtCore import QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -24,6 +25,11 @@ class FFTPlotCanvas(FigureCanvas):
         self.mpl_connect("motion_notify_event", self.on_mouse_move)
         self.mpl_connect("button_release_event", self.on_mouse_release)
         self.mpl_connect("scroll_event", self.on_mouse_scroll)
+
+        # Timer to delay updates for smoother transitions
+        """self.updateTimer = QTimer(self)
+        self.updateTimer.setSingleShot(True)  # Make sure it only fires once even if it was fired multiple times before ending
+        self.updateTimer.timeout.connect(lambda : self.plot_frequency_domain(self.modifiedSignal))"""
     
     # Hide the canvas from within the FFTPlotCanvas class
     def hideCanvas(self):
@@ -32,9 +38,14 @@ class FFTPlotCanvas(FigureCanvas):
     # Show the canvas from within the FFTPlotCanvas class
     def showCanvas(self):
         self.setVisible(True)  # Shows the canvas
+    
+    #def update(self):
+    #    self.updateTimer.start(150)  # 150ms delay before redrawing
 
-
-    def plot_frequency_domain(self, signal, sample_rate):
+    def plot_frequency_domain(self, signal, sample_rate = 44100):
+        if signal is None or len(signal) == 0:
+            self.ax.clear()
+            return
         self.ax.clear()
         # Compute FFT
         N = len(signal)
@@ -55,8 +66,8 @@ class FFTPlotCanvas(FigureCanvas):
             self.ax.plot(freq_bins, freq_magnitude_db, 'r')
         else:
             self.ax.set_xscale('linear')
-            if max_freq > 20000:
-                self.ax.set_xlim(left=0, right=20000)  # Set maximum frequency to 5000 Hz
+            if max_freq > 8000:
+                self.ax.set_xlim(left=0, right=8000)  # Set maximum frequency to 5000 Hz
             else:
                 self.ax.set_xlim(left=0, right=max_freq)
             self.ax.plot(freq_bins, freq_magnitude, 'r')
@@ -93,7 +104,7 @@ class FFTPlotCanvas(FigureCanvas):
                 if self.x_min + delta_x > 125 and self.x_max + delta_x < 8000:
                     self.x_min = self.x_min + delta_x
                     self.x_max = self.x_max + delta_x
-            elif self.x_min + delta_x > 0 and self.x_max + delta_x < 20000:
+            elif self.x_min + delta_x > 0 and self.x_max + delta_x < 8000:
                 self.x_min = self.x_min + delta_x
                 self.x_max = self.x_max + delta_x
 
@@ -134,8 +145,8 @@ class FFTPlotCanvas(FigureCanvas):
         else:
             if new_x_min < 0:
                 new_x_min = 0
-            if new_x_max > 20000:
-                new_x_max = 20000
+            if new_x_max > 8000:
+                new_x_max = 8000
 
         # Apply new limits
         self.x_min, self.x_max = new_x_min, new_x_max

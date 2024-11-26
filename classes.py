@@ -7,6 +7,7 @@ from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl, QTimer
 from pathlib import Path
 import soundfile as sf
+import pandas as pd
 import librosa
 import os
 
@@ -17,12 +18,28 @@ class FileBrowser:
         self.player = QMediaPlayer()
         self.signal = None
         self.sampling_rate = None
-        self.modified_signal = None
 
     def browse_file(self, mode):
-        file_path, _ = QFileDialog.getOpenFileName(directory= "D:/Signal-Equalizer-DSP", filter= " wav files (*.wav)")
-        self.fileName = Path(file_path).stem
-        self.signal, self.sampling_rate = librosa.load(file_path, sr= None)
+        if mode == "ecg":
+            file_path, _ = QFileDialog.getOpenFileName(directory="D:/Signal-Equalizer-DSP", filter="CSV files (*.csv)")
+            self.fileName = Path(file_path).stem
+
+            # Read the CSV file into a DataFrame
+            df = pd.read_csv(file_path)
+
+            # Extract the 'time' and 'amplitude' columns
+            self.time = df['Time'].values  # The first column contains time values
+            self.signal = df['Amplitude'].values  # The second column contains amplitude values
+
+            # Assuming uniform time intervals
+            time_deltas = np.diff(self.time)  # Compute differences between consecutive time values
+            self.sampling_rate = 1 / np.mean(time_deltas)  # Approximate sampling rate (in Hz)
+
+        else:
+            file_path, _ = QFileDialog.getOpenFileName(directory= "D:/Signal-Equalizer-DSP", filter= " wav files (*.wav)")
+            self.fileName = Path(file_path).stem
+            self.signal, self.sampling_rate = librosa.load(file_path, sr= None)
+
         return self.signal, self.sampling_rate
     
     def play_original_signal(self):

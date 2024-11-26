@@ -36,10 +36,10 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                         "Bat" : (3000, 9000)
                         },
                        {
-                        "Normal" : (0, 1000),
-                        "Atrial Fibrillation" : (15, 20),
-                        "Atrial Flutter" : (2, 8),
-                        "Ventricular Fibrillation" : (0, 5)
+                        "Normal" : (0, 35),
+                        "Atrial Fibrillation" : (48, 52),
+                        "Atrial Flutter" : (55, 94),
+                        "Ventricular Fibrillation" : (95, 155)
                        }
                     ]
         self.samplingRates = [210, 27000, 19000, 2500]
@@ -109,7 +109,10 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     def uploadSignal(self):
-        self.signal, self.sampling_rate = self.file_browser.browse_file("any")
+        if self.comboBox_modeSelection.currentIndex() == 3:
+            self.signal, self.sampling_rate = self.file_browser.browse_file("ecg")
+        else:
+            self.signal, self.sampling_rate = self.file_browser.browse_file("any")
         """if (self.comboBox_modeSelection.currentIndex() == 1 or 
             ((self.file_browser.fileName != "music") and (self.comboBox_modeSelection.currentIndex() == 1)) or 
             ((self.file_browser.fileName != "animals") and (self.comboBox_modeSelection.currentIndex() == 2))):
@@ -199,13 +202,14 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.labels[i].setText(f"{sliderValue} Hz")
                 self.sliders[i].setValue(10)
             self.startDefault()
-            self.PlotWidget_fourier.showCanvas()
+            #self.PlotWidget_fourier.showCanvas()
 
         else:
             self.defaultMode = False
+            self.PlotWidget_fourier.plot_frequency_domain([])
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
-            self.PlotWidget_fourier.hideCanvas()
+            #self.PlotWidget_fourier.hideCanvas()
             self.isPaused = True
             self.left_x_view = 0 # used in adjusting the left x view of the signal while running in cine mode
             self.right_x_view  = self.left_x_view + 1  # adjusting the right x view
@@ -256,7 +260,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.togglePlayPause()
 
             self.PlotWidget_outputSpectrogram.update(None, self.magnitudes)
-            self.plot_frequency_domain()
 
         else:
             modified_spectrum = self.spectrum.copy()
@@ -280,6 +283,10 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.PlotWidget_outputSignal.plotItem.setXRange(self.left_x_view, self.right_x_view)
             self.PlotWidget_outputSignal.plot(self.output_time_values, self.modified_signal, pen = "b")
             self.PlotWidget_outputSpectrogram.update(self.modified_signal, [-1])
+            #self.PlotWidget_fourier.update()
+            self.PlotWidget_fourier.modifiedSignal = self.modified_signal
+            self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal)
+            #self.PlotWidget_fourier.update()
         
         
     """def computeFourierTransform(self):
