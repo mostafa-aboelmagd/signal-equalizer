@@ -110,7 +110,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def uploadSignal(self):
         self.signal, self.sampling_rate = self.file_browser.browse_file("any")
-        if (self.comboBox_modeSelection.currentIndex() == 1 or 
+        """if (self.comboBox_modeSelection.currentIndex() == 1 or 
             ((self.file_browser.fileName != "music") and (self.comboBox_modeSelection.currentIndex() == 1)) or 
             ((self.file_browser.fileName != "animals") and (self.comboBox_modeSelection.currentIndex() == 2))):
                 self.signal = ""
@@ -120,7 +120,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 msg.setWindowTitle("Browsing Error")
                 msg.setText("Choose A Different Mode To View This Signal")
                 msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-                msg.exec()  # Show the message box
+                msg.exec()  # Show the message box"""
         # Perform FFT
         self.freqs = fft.fftfreq(len(self.signal), 1 / self.sampling_rate) # returns an array of frequency values corresponding to each sample in the FFT result
         self.spectrum = fft.fft(self.signal) # returns an array containing frequency components, their magnitudes, and their phases
@@ -226,6 +226,9 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.sliders[self.shown_sliders_indices[loopCounter]].setValue(10)  # initializing scale of each slider to be 1 (maximum)
                 self.labels[self.shown_sliders_indices[loopCounter]].setText(key)   # adjusting label of each slider
                 loopCounter += 1
+            
+            self.PlotWidget_inputSignal.clear()
+            self.PlotWidget_outputSignal.clear()
             
             self.sliderFrequencyMap = {}  # contains each slider as a key, the starting and ending freqs (tuple) of its range of freqs as the value
             for i in range(len(self.shown_sliders_indices)):
