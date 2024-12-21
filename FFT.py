@@ -15,9 +15,10 @@ class FFTPlotCanvas(FigureCanvas):
         # Initialize zoom and pan variables
         self.x_min = None
         self.x_max = None
-        self.log_scale =  False  # Linear scale by default
+        self.log_scale =  True  # Linear scale by default
         self.pan_start_x = None  # For panning
         self.zoom_factor = 0.1  # 10% zoom
+        self.max_freq = 0
         
         # Enable mouse tracking and set up Matplotlib event handlers
         self.mpl_connect("button_press_event", self.on_mouse_press)
@@ -42,32 +43,37 @@ class FFTPlotCanvas(FigureCanvas):
         freq_magnitude = np.abs(freq_components[:N // 2])
         freq_magnitude_db = 20 * np.log10(freq_magnitude + 1e-12)
         freq_bins = np.fft.fftfreq(N, d=1 / sample_rate)[:N // 2]
-        max_freq =  max(freq_bins)
+        # check the magnitude of the frequency bins and do not plot the ones that are too small
+        x_lim = 10
+        for mag in reversed(freq_magnitude_db):
+            if mag > x_lim:
+                break
+            else:
+                freq_bins = freq_bins[:-1]
+                freq_magnitude = freq_magnitude[:-1]
+                freq_magnitude_db = freq_magnitude_db[:-1]
+        
+        # set the x-axis limits
+        self.max_freq = max(freq_bins)
+        if not self.x_max:
+             self.ax.set_xlim(0, self.max_freq)
 
         # Plot settings
         if self.log_scale:
             self.ax.set_xscale('log')
             self.ax.set_ylim(bottom=120, top=-20) 
-            if max_freq > 8000:
-                self.ax.set_xlim(left=125, right=8000)  # Set minimum frequency to 20 Hz
-            else:
-                self.ax.set_xlim(left=125, right=max_freq)
             self.ax.plot(freq_bins, freq_magnitude_db, 'r')
         else:
             self.ax.set_xscale('linear')
-            if max_freq > 20000:
-                self.ax.set_xlim(left=0, right=20000)  # Set maximum frequency to 5000 Hz
-            else:
-                self.ax.set_xlim(left=0, right=max_freq)
             self.ax.plot(freq_bins, freq_magnitude, 'r')
-
         
         self.ax.set_xlabel("Frequency")
         self.ax.set_ylabel("Magnitude")
         self.ax.grid(True)
 
         # Set initial limits for zooming and panning
-        self.x_min, self.x_max = self.ax.get_xlim()
+        if not self.x_min:
+            self.x_min, self.x_max = self.ax.get_xlim()
         self.draw()
 
     def on_mouse_press(self, event):
@@ -77,6 +83,8 @@ class FFTPlotCanvas(FigureCanvas):
 
     def on_mouse_move(self, event):
         """Handle mouse drag events for panning left and right."""
+        if not self.max_freq:
+            return
         if self.pan_start_x is not None and event.xdata is not None:
             # Calculate the delta to move the plot
             if self.log_scale:
@@ -93,7 +101,7 @@ class FFTPlotCanvas(FigureCanvas):
                 if self.x_min + delta_x > 125 and self.x_max + delta_x < 8000:
                     self.x_min = self.x_min + delta_x
                     self.x_max = self.x_max + delta_x
-            elif self.x_min + delta_x > 0 and self.x_max + delta_x < 20000:
+            elif self.x_min + delta_x > 0 and self.x_max + delta_x < self.max_freq:
                 self.x_min = self.x_min + delta_x
                 self.x_max = self.x_max + delta_x
 
@@ -134,8 +142,8 @@ class FFTPlotCanvas(FigureCanvas):
         else:
             if new_x_min < 0:
                 new_x_min = 0
-            if new_x_max > 20000:
-                new_x_max = 20000
+            if new_x_max > self.max_freq:
+                new_x_max = self.max_freq
 
         # Apply new limits
         self.x_min, self.x_max = new_x_min, new_x_max
@@ -163,9 +171,6 @@ class MainWindow(QMainWindow):
         self.canvas = FFTPlotCanvas(self, width=5, height=4, dpi=100)
         layout.addWidget(self.canvas)
 
-        self.plot_time_button = QPushButton("Plot Time Domain")
-        self.plot_time_button.clicked.connect(self.plot_time_domain)
-        layout.addWidget(self.plot_time_button)
 
         self.plot_freq_button = QPushButton("Plot Frequency Domain")
         self.plot_freq_button.clicked.connect(self.plot_frequency_domain)
@@ -175,8 +180,6 @@ class MainWindow(QMainWindow):
         self.load_audio_button.clicked.connect(self.load_audio)
         layout.addWidget(self.load_audio_button)
 
-    def plot_time_domain(self):
-        self.canvas.plot_time_domain(self.signal, self.sample_rate)
 
     def plot_frequency_domain(self):
         self.canvas.plot_frequency_domain(self.signal, self.sample_rate)
