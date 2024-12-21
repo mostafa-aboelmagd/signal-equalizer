@@ -2,3 +2,4 @@
 *.pyc
 *.mp3
 lexus_lfa_a_symphony_of_sound.mp3
+ecg_data(time, amplitude).csv
