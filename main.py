@@ -6,7 +6,7 @@ from classes import FileBrowser
 import scipy.fftpack as fft
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
 
-class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
+class MainApp( Ui_MainWindow):
     def __init__(self):
         super(MainApp, self).__init__()
         self.setupUi(self) # Loads all components of the UI created using the designer
@@ -109,21 +109,10 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     def uploadSignal(self):
-        if self.comboBox_modeSelection.currentIndex() == 3:
+        if self.comboBox_modeSelection.currentIndex() == 2:
             self.signal, self.sampling_rate = self.file_browser.browse_file("ecg")
         else:
             self.signal, self.sampling_rate = self.file_browser.browse_file("any")
-        """if (self.comboBox_modeSelection.currentIndex() == 1 or 
-            ((self.file_browser.fileName != "music") and (self.comboBox_modeSelection.currentIndex() == 1)) or 
-            ((self.file_browser.fileName != "animals") and (self.comboBox_modeSelection.currentIndex() == 2))):
-                self.signal = ""
-                self.sampling_rate = 0
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
-                msg.setWindowTitle("Browsing Error")
-                msg.setText("Choose A Different Mode To View This Signal")
-                msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-                msg.exec()  # Show the message box"""
         # Perform FFT
         self.freqs = fft.fftfreq(len(self.signal), 1 / self.sampling_rate) # returns an array of frequency values corresponding to each sample in the FFT result
         self.spectrum = fft.fft(self.signal) # returns an array containing frequency components, their magnitudes, and their phases
@@ -281,44 +270,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.PlotWidget_outputSignal.plotItem.setXRange(self.left_x_view, self.right_x_view)
             self.PlotWidget_outputSignal.plot(self.output_time_values, self.modified_signal, pen = "b")
             self.PlotWidget_outputSpectrogram.update(self.modified_signal, [-1])
-            #self.PlotWidget_fourier.update()
-            self.PlotWidget_fourier.modifiedSignal = self.modified_signal
-            self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal)
-            #self.PlotWidget_fourier.update()
-        
-        
-    """def computeFourierTransform(self):
-        self.freq_components = np.fft.fft(self.signal)    # returns 1d np array containing freq all freq components (mag and phase, not the freq itself) of sinusoidals sharing in the signal.
-        self.frequencies = np.fft.fftfreq(len(self.signal), 1/self.sampling_rate)  # the frequencies themselves that are sharing in the signal, not their components. Parameters are num of pts in the signal and time spacing between each 2 pts.
-        self.magnitudes = np.abs(self.freq_components)     # obtaining magnitudes corresponding to each freq component.
-        self.phase_angles = np.angle(self.freq_components)   # obtaining phase angles corresponding to each freq component
-        
-        #print(f"max frequency: {self.frequencies[len(self.frequencies) // 2]}") # for debugging
-        
-        # looping on all sliders:
-        for slider in self.sliders:
-
-            # getting new freq components corresponding to the change occurred to mags of each slider
-            if self.sliders.index(slider) in self.shown_sliders_indices:  # if the idx of the current slider is in the shown sliders indices (the slider being checked is in use)
-                min_slider_freq = self.sliderFrequencyMap[slider][0]
-                max_slider_freq = self.sliderFrequencyMap[slider][1]  # bound frequencies of the range that this slider holds
-                slider_freq_indices = np.where((self.frequencies >= min_slider_freq) & (self.frequencies <= max_slider_freq))[0]  # indices of frequencies this range in the "frequencies" array
-                #print(f" range indices: {slider_freq_indices}")  # for debugging
-                self.magnitudes[slider_freq_indices] *= (slider.value()/10) # new magnitudes in this range corresponding to the slider's value     
-                self.freq_components[slider_freq_indices] = self.magnitudes[slider_freq_indices] * np.exp(1j * self.phase_angles[slider_freq_indices]) # updating frequency components array in this range
-        
-        #print(f"length of frequencies array: {len(self.frequencies)}")  # for debugging
-        #print(f"frequencies corrsponding to last slider: {self.frequencies[slider_freq_indices]}")
-        #print(f"magnitudes corresponding to last slider: {new_slider_magnitudes}")
-        
-        modified_signal = self.invFourierTransform()
-        return modified_signal
-
-
-    def invFourierTransform(self):
-        modified_signal = np.fft.ifft(self.freq_components).real
-        return modified_signal"""
-
+        self.plot_frequency_domain()
     def togglePlayPause(self):
         if self.isPaused == True:
             self.isPaused = False

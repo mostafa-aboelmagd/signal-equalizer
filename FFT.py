@@ -16,7 +16,7 @@ class FFTPlotCanvas(FigureCanvas):
         # Initialize zoom and pan variables
         self.x_min = None
         self.x_max = None
-        self.log_scale =  True  # Linear scale by default
+        self.log_scale =  False  # Linear scale by default
         self.pan_start_x = None  # For panning
         self.zoom_factor = 0.1  # 10% zoom
         self.max_freq = 0
@@ -66,8 +66,6 @@ class FFTPlotCanvas(FigureCanvas):
         
         # set the x-axis limits
         self.max_freq = max(freq_bins)
-        if not self.x_max:
-             self.ax.set_xlim(0, self.max_freq)
 
         # Plot settings
         if self.log_scale:
@@ -81,10 +79,13 @@ class FFTPlotCanvas(FigureCanvas):
         self.ax.set_xlabel("Frequency")
         self.ax.set_ylabel("Magnitude")
         self.ax.grid(True)
-
-        # Set initial limits for zooming and panning
-        if not self.x_min:
-            self.x_min, self.x_max = self.ax.get_xlim()
+        if self.x_max == None:
+            self.ax.set_xlim(0, self.max_freq)
+            self.x_min, self.x_max = 0 , self.max_freq
+        elif self.log_scale and self.x_min < 1:
+            self.ax.set_xlim(1, self.x_max)
+        else:
+            self.ax.set_xlim(self.x_min,self.x_max)
         self.draw()
 
     def on_mouse_press(self, event):
@@ -108,11 +109,7 @@ class FFTPlotCanvas(FigureCanvas):
             # Adjust the x-axis limits for panning
 
             # Ensure limits stay within the valid frequency range
-            if self.log_scale:
-                if self.x_min + delta_x > 125 and self.x_max + delta_x < 8000:
-                    self.x_min = self.x_min + delta_x
-                    self.x_max = self.x_max + delta_x
-            elif self.x_min + delta_x > 0 and self.x_max + delta_x < self.max_freq:
+            if self.x_min + delta_x > 0 and self.x_max + delta_x <= self.max_freq:
                 self.x_min = self.x_min + delta_x
                 self.x_max = self.x_max + delta_x
 
@@ -145,16 +142,13 @@ class FFTPlotCanvas(FigureCanvas):
         new_x_max = mouse_x + (self.x_max - mouse_x) * scale_factor
 
         # Ensure limits stay within the valid frequency range
-        if self.log_scale:
-            if new_x_min < 125:
-                new_x_min = 125
-            if new_x_max > 8000:
-                new_x_max = 8000
-        else:
-            if new_x_min < 0:
-                new_x_min = 0
-            if new_x_max > self.max_freq:
-                new_x_max = self.max_freq
+       
+        if self.log_scale and new_x_min < 1:
+            new_x_min = 1
+        elif new_x_min < 0:
+            new_x_min = 0
+        if new_x_max > self.max_freq:
+            new_x_max = self.max_freq
 
         # Apply new limits
         self.x_min, self.x_max = new_x_min, new_x_max

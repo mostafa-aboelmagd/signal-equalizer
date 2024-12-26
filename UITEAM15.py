@@ -11,10 +11,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from FFT import FFTPlotCanvas
 from classes import Spectrogram
+from PyQt5.QtWidgets import QMainWindow
 
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1354, 1061)
@@ -2036,11 +2037,8 @@ class Ui_MainWindow(object):
         font.setItalic(False)
         font.setWeight(7)
         self.comboBox_modeSelection.setFont(font)
-        self.comboBox_modeSelection.setStyleSheet("font: 60 18pt \"MS Shell Dlg 2\";")
+        self.comboBox_modeSelection.setStyleSheet("font: 40 13pt \"MS Shell Dlg 2\";")
         self.comboBox_modeSelection.setObjectName("comboBox_modeSelection")
-        icon7 = QtGui.QIcon()
-        icon7.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/Uniform.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.comboBox_modeSelection.addItem(icon7, "")
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/Music.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.comboBox_modeSelection.addItem(icon8, "")
@@ -2225,17 +2223,13 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.actionOpen.setFont(font)
         self.actionOpen.setObjectName("actionOpen")
-        self.actionUniform = QtWidgets.QAction(MainWindow)
         icon12 = QtGui.QIcon()
         icon12.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/uniform mode.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionUniform.setIcon(icon12)
         font = QtGui.QFont()
         font.setFamily("Yu Gothic UI")
         font.setPointSize(15)
         font.setBold(True)
         font.setWeight(75)
-        self.actionUniform.setFont(font)
-        self.actionUniform.setObjectName("actionUniform")
         self.actionMusical = QtWidgets.QAction(MainWindow)
         icon13 = QtGui.QIcon()
         icon13.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/musical mode.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -2247,28 +2241,28 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.actionMusical.setFont(font)
         self.actionMusical.setObjectName("actionMusical")
-        self.actionAnimal_Sounds = QtWidgets.QAction(MainWindow)
+        self.actionVowels = QtWidgets.QAction(MainWindow)
         icon14 = QtGui.QIcon()
         icon14.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/animals mode.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionAnimal_Sounds.setIcon(icon14)
+        self.actionVowels.setIcon(icon14)
         font = QtGui.QFont()
         font.setFamily("Yu Gothic UI")
         font.setPointSize(15)
         font.setBold(True)
         font.setWeight(75)
-        self.actionAnimal_Sounds.setFont(font)
-        self.actionAnimal_Sounds.setObjectName("actionAnimal_Sounds")
-        self.actionECG_Abnormalities = QtWidgets.QAction(MainWindow)
+        self.actionVowels.setFont(font)
+        self.actionVowels.setObjectName("actionVowels")
+        self.actionWeiner = QtWidgets.QAction(MainWindow)
         icon15 = QtGui.QIcon()
         icon15.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/ecg mode.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionECG_Abnormalities.setIcon(icon15)
+        self.actionWeiner.setIcon(icon15)
         font = QtGui.QFont()
         font.setFamily("Yu Gothic UI")
         font.setPointSize(15)
         font.setBold(True)
         font.setWeight(75)
-        self.actionECG_Abnormalities.setFont(font)
-        self.actionECG_Abnormalities.setObjectName("actionECG_Abnormalities")
+        self.actionWeiner.setFont(font)
+        self.actionWeiner.setObjectName("actionWeiner")
         self.actionClose = QtWidgets.QAction(MainWindow)
         icon16 = QtGui.QIcon()
         icon16.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/close.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -2282,26 +2276,26 @@ class Ui_MainWindow(object):
         self.actionClose.setObjectName("actionClose")
 
         self.retranslateUi(MainWindow)
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_1.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_1_Hz.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_2.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_2_Hz.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_3.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_3_Hz.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_4.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_4_Hz.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_5.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_5_Hz.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_6.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_6_Hz.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_7.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_7_Hz.hide) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
-        self.actionECG_Abnormalities.triggered['bool'].connect(self.label_10_Hz.show) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_1.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_1_Hz.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_2.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_2_Hz.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_3.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_3_Hz.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_4.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_4_Hz.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_5.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_5_Hz.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_6.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_6_Hz.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_7.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_7_Hz.hide) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
+        self.actionWeiner.triggered['bool'].connect(self.label_10_Hz.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.verticalSlider_1.hide) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.label_1_Hz.hide) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.verticalSlider_2.hide) # type: ignore
@@ -2322,46 +2316,26 @@ class Ui_MainWindow(object):
         self.actionMusical.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.label_10_Hz.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_1.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_1_Hz.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_2.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_2_Hz.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_3.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_3_Hz.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_4.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_4_Hz.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_5.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_5_Hz.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_6.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_6_Hz.hide) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_7.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_7_Hz.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
-        self.actionAnimal_Sounds.triggered['bool'].connect(self.label_10_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_1.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_1_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_2.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_2_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_3.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_3_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_4.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_4_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_5.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_5_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_6.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_6_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_7.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_7_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
-        self.actionUniform.triggered['bool'].connect(self.label_10_Hz.show) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_1.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_1_Hz.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_2.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_2_Hz.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_3.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_3_Hz.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_4.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_4_Hz.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_5.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_5_Hz.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_6.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_6_Hz.hide) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_7.show) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_7_Hz.show) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
+        self.actionVowels.triggered['bool'].connect(self.label_10_Hz.show) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -2403,16 +2377,13 @@ class Ui_MainWindow(object):
         self.pushButton_zoomIn.setToolTip(_translate("MainWindow", "Zoom in"))
         self.label_33.setText(_translate("MainWindow", "Control Panel"))
         self.pushButton_uploadButton.setText(_translate("MainWindow", "Upload"))
-        self.comboBox_modeSelection.setItemText(0, _translate("MainWindow", "Uniform Range"))
-        self.comboBox_modeSelection.setItemText(1, _translate("MainWindow", "Musical Instruments"))
-        self.comboBox_modeSelection.setItemText(2, _translate("MainWindow", "Animal Sounds"))
-        self.comboBox_modeSelection.setItemText(3, _translate("MainWindow", "ECG Abnormalities"))
+        self.comboBox_modeSelection.setItemText(0, _translate("MainWindow", "Music & Animal"))
+        self.comboBox_modeSelection.setItemText(1, _translate("MainWindow", "Vowels"))
+        self.comboBox_modeSelection.setItemText(2, _translate("MainWindow", "Weiner Filter"))
         self.actionOpen.setText(_translate("MainWindow", "Open"))
-        self.actionUniform.setText(_translate("MainWindow", "Uniform Range"))
-        self.actionUniform.setIconText(_translate("MainWindow", "Uniform Range"))
-        self.actionMusical.setText(_translate("MainWindow", "Musical Instruments"))
-        self.actionAnimal_Sounds.setText(_translate("MainWindow", "Animal Sounds"))
-        self.actionECG_Abnormalities.setText(_translate("MainWindow", "ECG Abnormalities"))
+        self.actionMusical.setText(_translate("MainWindow", "Music & Animal"))
+        self.actionVowels.setText(_translate("MainWindow", "Vowels"))
+        self.actionWeiner.setText(_translate("MainWindow", "Weiner Filter"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
 from pyqtgraph import PlotWidget
 
