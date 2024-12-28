@@ -1289,7 +1289,7 @@ class Ui_MainWindow(QMainWindow):
         self.gridLayout_5.setContentsMargins(-1, 20, -1, -1)
         self.gridLayout_5.setObjectName("gridLayout_5")
         self.PlotWidget_fourier = FFTPlotCanvas(self.groupBox_5)
-        self.PlotWidget_fourier.setMinimumSize(QtCore.QSize(800, 270))
+        self.PlotWidget_fourier.setMinimumSize(QtCore.QSize(800, 230))
         self.PlotWidget_fourier.setObjectName("PlotWidget_fourier")
         self.gridLayout_5.addWidget(self.PlotWidget_fourier, 1, 0, 1, 1)
         self.comboBox_frequencyScale = QtWidgets.QComboBox(self.groupBox_5)

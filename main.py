@@ -20,27 +20,17 @@ class MainApp( Ui_MainWindow):
         self.setupUI() # Calls our custom method which links the UI elements
         self.retranslateUi(self)
         self.timer = QTimer()
-        self.ranges = [
-                       # uniform range frequency ranges
-                       {"empty" : ()},
-                       {
+        self.ranges = [ #TODO : fix the ranges when you find a mixed music
+                       { # music and animal sounds
                         "Trumpet": (0, 500), 
                         "Xylophone" : (500, 1200),
                         "Brass": (1200, 6400),
-                        "Celesta" : (4000, 13000)
-                        },
-                       {
+                        "Celesta" : (4000, 13000),
                         "Dogs" : (0, 450),
                         "Wolves" : (450, 1100),
                         "Crow" : (1100, 3000),
                         "Bat" : (3000, 9000)
-                        },
-                       {
-                        "Normal" : (0, 35),
-                        "Atrial Fibrillation" : (48, 52),
-                        "Atrial Flutter" : (55, 94),
-                        "Ventricular Fibrillation" : (95, 155)
-                       }
+                        }
                     ]
         self.samplingRates = [210, 27000, 19000, 2500]
         
@@ -111,14 +101,17 @@ class MainApp( Ui_MainWindow):
     def uploadSignal(self):
         if self.comboBox_modeSelection.currentIndex() == 2:
             self.signal, self.sampling_rate = self.file_browser.browse_file("ecg")
+        elif self.comboBox_modeSelection.currentIndex() == 0:
+            self.signal, self.sampling_rate = self.file_browser.browse_file("music")
         else:
-            self.signal, self.sampling_rate = self.file_browser.browse_file("any")
+            self.signal, self.sampling_rate = self.file_browser.browse_file("voice")
         # Perform FFT
         self.freqs = fft.fftfreq(len(self.signal), 1 / self.sampling_rate) # returns an array of frequency values corresponding to each sample in the FFT result
         self.spectrum = fft.fft(self.signal) # returns an array containing frequency components, their magnitudes, and their phases
         self.plotSignal()
 
-    def plotSignal(self):  
+    def plotSignal(self): 
+        self.PlotWidget_inputSignal.clear() 
         self.left_x_view = 0 # used in adjusting the left x view of the signal while running in cine mode
         self.right_x_view  = self.left_x_view + 1  # adjusting the right x view
         self.duration = (1/self.sampling_rate) * len(self.signal)
@@ -200,7 +193,7 @@ class MainApp( Ui_MainWindow):
             self.isPaused = True
             self.left_x_view = 0 # used in adjusting the left x view of the signal while running in cine mode
             self.right_x_view  = self.left_x_view + 1  # adjusting the right x view
-            self.shown_sliders_indices = [1, 3, 5, 7]
+            self.shown_sliders_indices = [1, 2, 5, 7]
 
             for i in range(len(self.sliders)):
                 idxShown = False
@@ -262,7 +255,7 @@ class MainApp( Ui_MainWindow):
                 modified_spectrum[mask] *= slider_value
                 
             # Perform inverse FFT to get the modified time-domain signal
-            self.modified_signal = np.real(fft.ifft(modified_spectrum))
+            self.modified_signal = np.real(fft.ifft(modified_spectrum)) 
 
             self.file_browser.modified_signal = self.modified_signal
             self.output_time_values = np.linspace(start = 0, stop = self.duration, num = len(self.modified_signal))
