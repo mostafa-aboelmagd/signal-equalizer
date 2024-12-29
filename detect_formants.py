@@ -12,21 +12,21 @@ def detect_formants(audio_file):
     # Extract formant frequencies
     formant_frequencies = []
     for t in np.arange(0, sound.duration, 0.01):
-        formant_frequencies.append([formant.get_value_at_time(i, t) for i in range(1, 4)])
+        formant_frequencies.append([formant.get_value_at_time(i, t) for i in range(1, 10)])
 
     return np.array(formant_frequencies)
 
 def plot_formants(formant_frequencies):
     # Plot the formant frequencies
     plt.figure()
-    for i in range(3):
+    for i in range(9):
         plt.plot(formant_frequencies[:, i], label=f'Formant {i+1}')
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
-    plt.legend()
+    #plt.legend()
     plt.show()
 
 if __name__ == "__main__":
-    audio_file = "VOWEL_A.wav"  # Replace with your audio file
+    audio_file = "VOWEL_E.wav"  # Replace with your audio file
     formant_frequencies = detect_formants(audio_file)
     plot_formants(formant_frequencies)

@@ -3,17 +3,17 @@ import numpy as np
 import soundfile as sf
 
 # Read the audio file
-signal, sampling_rate = sf.read('voice.wav')
+signal, sampling_rate = sf.read('VOWELS.wav')
 
-# Get the first 10 seconds of the signal
-signal = signal[:int(10 * sampling_rate)]
 
 # Perform FFT on the signal
 freq = fft.fft(signal)
 freqs_bins = fft.fftfreq(len(signal), 1 / sampling_rate)
 vowel_formant_ranges = [
-        (500, 1100), 
-        (1330, 1790),  
+        (400,550), # a formant 1
+        (1800,3000)
+        # (1700, 2020), # a formant 1
+        # (2200, 2600), # a formant 2
 ]   
 # Apply bandstop filter: Zero out frequencies around Formant 2 (1000 Hz to 2000 Hz)
 for range in vowel_formant_ranges:

@@ -2039,6 +2039,9 @@ class Ui_MainWindow(QMainWindow):
         self.comboBox_modeSelection.setFont(font)
         self.comboBox_modeSelection.setStyleSheet("font: 40 13pt \"MS Shell Dlg 2\";")
         self.comboBox_modeSelection.setObjectName("comboBox_modeSelection")
+        icon7 = QtGui.QIcon()
+        icon7.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/Uniform.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.comboBox_modeSelection.addItem(icon7, "")
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/Music.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.comboBox_modeSelection.addItem(icon8, "")
@@ -2223,13 +2226,17 @@ class Ui_MainWindow(QMainWindow):
         font.setWeight(75)
         self.actionOpen.setFont(font)
         self.actionOpen.setObjectName("actionOpen")
+        self.actionUniform = QtWidgets.QAction(MainWindow)
         icon12 = QtGui.QIcon()
         icon12.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/uniform mode.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionUniform.setIcon(icon12)
         font = QtGui.QFont()
         font.setFamily("Yu Gothic UI")
         font.setPointSize(15)
         font.setBold(True)
         font.setWeight(75)
+        self.actionUniform.setFont(font)
+        self.actionUniform.setObjectName("actionUniform")
         self.actionMusical = QtWidgets.QAction(MainWindow)
         icon13 = QtGui.QIcon()
         icon13.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/musical mode.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -2316,6 +2323,26 @@ class Ui_MainWindow(QMainWindow):
         self.actionMusical.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
         self.actionMusical.triggered['bool'].connect(self.label_10_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_1.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_1_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_2.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_2_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_3.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_3_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_4.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_4_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_5.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_5_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_6.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_6_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_7.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_7_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_8.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_8_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_9.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_9_Hz.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.verticalSlider_10.show) # type: ignore
+        self.actionUniform.triggered['bool'].connect(self.label_10_Hz.show) # type: ignore
         self.actionVowels.triggered['bool'].connect(self.verticalSlider_1.hide) # type: ignore
         self.actionVowels.triggered['bool'].connect(self.label_1_Hz.hide) # type: ignore
         self.actionVowels.triggered['bool'].connect(self.verticalSlider_2.hide) # type: ignore
@@ -2377,10 +2404,13 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_zoomIn.setToolTip(_translate("MainWindow", "Zoom in"))
         self.label_33.setText(_translate("MainWindow", "Control Panel"))
         self.pushButton_uploadButton.setText(_translate("MainWindow", "Upload"))
-        self.comboBox_modeSelection.setItemText(0, _translate("MainWindow", "Music & Animal"))
-        self.comboBox_modeSelection.setItemText(1, _translate("MainWindow", "Vowels"))
-        self.comboBox_modeSelection.setItemText(2, _translate("MainWindow", "Weiner Filter"))
+        self.comboBox_modeSelection.setItemText(0, _translate("MainWindow", "Uniform Range"))
+        self.comboBox_modeSelection.setItemText(1, _translate("MainWindow", "Music & Animal"))
+        self.comboBox_modeSelection.setItemText(2, _translate("MainWindow", "Vowels"))
+        self.comboBox_modeSelection.setItemText(3, _translate("MainWindow", "Weiner Filter"))
         self.actionOpen.setText(_translate("MainWindow", "Open"))
+        self.actionUniform.setText(_translate("MainWindow", "Uniform Range"))
+        self.actionUniform.setIconText(_translate("MainWindow", "Uniform Range"))
         self.actionMusical.setText(_translate("MainWindow", "Music & Animal"))
         self.actionVowels.setText(_translate("MainWindow", "Vowels"))
         self.actionWeiner.setText(_translate("MainWindow", "Weiner Filter"))

@@ -21,7 +21,8 @@ class MainApp( Ui_MainWindow):
         self.retranslateUi(self)
         self.timer = QTimer()
         self.ranges = [ #TODO : fix the ranges when you find a mixed music
-                       { # music and animal sounds
+            {"empty" : ()},
+            { # music and animal sounds
                         "Trumpet": (0, 500), 
                         "Xylophone" : (500, 1200),
                         "Brass": (1200, 6400),
@@ -30,8 +31,8 @@ class MainApp( Ui_MainWindow):
                         "Wolves" : (450, 1100),
                         "Crow" : (1100, 3000),
                         "Bat" : (3000, 9000)
-                        }
-                    ]
+            }
+        ]
         self.samplingRates = [210, 27000, 19000, 2500]
         
         self.startDefault()
