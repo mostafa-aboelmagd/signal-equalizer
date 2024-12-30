@@ -19,26 +19,29 @@ class FileBrowser:
         self.signal = None
         self.sampling_rate = None
 
-    def browse_file(self, mode):
-        if mode == "ecg":
-            file_path, _ = QFileDialog.getOpenFileName(directory="D:/Signal-Equalizer-DSP", filter="CSV files (*.csv)")
-            self.fileName = Path(file_path).stem
+    def browse_file(self, mode = "wav"):
+        try:
+            if mode == "ecg":
+                file_path, _ = QFileDialog.getOpenFileName(directory="D:/Signal-Equalizer-DSP", filter="CSV files (*.csv)")
+                self.fileName = Path(file_path).stem
 
-            # Read the CSV file into a DataFrame
-            df = pd.read_csv(file_path)
+                # Read the CSV file into a DataFrame
+                df = pd.read_csv(file_path)
 
-            # Extract the 'time' and 'amplitude' columns
-            self.time = df['Time'].values  # The first column contains time values
-            self.signal = df['Amplitude'].values  # The second column contains amplitude values
+                # Extract the 'time' and 'amplitude' columns
+                self.time = df['Time'].values  # The first column contains time values
+                self.signal = df['Amplitude'].values  # The second column contains amplitude values
 
-            # Assuming uniform time intervals
-            time_deltas = np.diff(self.time)  # Compute differences between consecutive time values
-            self.sampling_rate = 1 / np.mean(time_deltas)  # Approximate sampling rate (in Hz)
+                # Assuming uniform time intervals
+                time_deltas = np.diff(self.time)  # Compute differences between consecutive time values
+                self.sampling_rate = 1 / np.mean(time_deltas)  # Approximate sampling rate (in Hz)
 
-        else:
-            file_path, _ = QFileDialog.getOpenFileName(directory= "D:/Signal-Equalizer-DSP", filter= " wav files (*.wav)")
-            self.fileName = Path(file_path).stem
-            self.signal, self.sampling_rate = librosa.load(file_path, sr= None)
+            else:
+                file_path, _ = QFileDialog.getOpenFileName(directory= "D:/Signal-Equalizer-DSP", filter= " wav files (*.wav)")
+                self.fileName = Path(file_path).stem
+                self.signal, self.sampling_rate = librosa.load(file_path, sr= None)
+        except Exception:
+            return None, None
 
         return self.signal, self.sampling_rate
     
@@ -64,7 +67,7 @@ class FileBrowser:
             self.player.stop()
         else:
             self.player = QMediaPlayer()
-            sf.write(temp_file_path, self.modified_signal, self.sampling_rate)
+            sf.write(temp_file_path, self.signal, self.sampling_rate)
             self.player.setMedia(QMediaContent(QUrl.fromLocalFile(temp_file_path)))
             self.player.play()
 
@@ -121,7 +124,7 @@ class Spectrogram(QWidget):
         fSpectro, tSpectro, spectralDensity = spectrogram(self.signal, self.fs, nperseg=nperseg, nfft=nfft, window='hann', noverlap=nperseg//2)  # hann window function is applied to each segment of the signal before the FFT to minimize the impact of segmenting
 
         ax.clear()  # Clear the existing plot
-        cax = ax.pcolormesh(tSpectro, fSpectro, 10 * np.log10(spectralDensity), shading='auto', cmap='inferno')  # Use dB scale for intensity
+        cax = ax.pcolormesh(tSpectro, fSpectro, 10 * np.log10(spectralDensity + 1e-12), shading='auto', cmap='inferno')  # Use dB scale for intensity
         ax.set_ylabel("Frequency [Hz]")
         ax.set_xlabel("Time [sec]")
         ax.set_ylim(0, 0.5 * self.fs)  # Limit the y-axis to 1/2 the frequency sampling

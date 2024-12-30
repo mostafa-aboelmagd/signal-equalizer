@@ -29,15 +29,22 @@ class MainApp( Ui_MainWindow):
                         "Celesta" : (4000, 13000),
                         "Dogs" : (0, 450),
                         "Wolves" : (450, 1100),
-                        "Crow" : (1100, 3000),
-                        "Bat" : (3000, 9000)
-            }
+            },
+            {
+                # TODO: Fix the ranges when you find VOWELS
+                "A" : (1100, 3000),
+                "E" : (3000, 9000),
+                "Sound1": (0, 500), 
+                "Sound2" : (500, 1200),
+                "Sound3": (1200, 6400),  
+            },
+            {"empty" : ()}, # TODO : fix the ranges when you find Weiner
+
         ]
-        self.samplingRates = [210, 27000, 19000, 2500]
+        #self.samplingRates = [210, 27000, 19000, 2500] #TODO : check if this is right
         
         self.startDefault()
         self.connectSignals()
-        self.plot_frequency_domain()
 
     def setupUI(self):
         self.file_browser = FileBrowser(self)
@@ -51,7 +58,7 @@ class MainApp( Ui_MainWindow):
 
     def startDefault(self):
         self.isPaused = False
-        self.sampling_rate = 1000
+        self.sampling_rate = 1000 # TODO : check if this right
         self.chunksize = 10
         self.curr_ptr = 0
         self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
@@ -66,6 +73,7 @@ class MainApp( Ui_MainWindow):
                 self.PlotWidget_inputSpectrogram.showSpectrogram()
                 self.PlotWidget_outputSpectrogram.showSpectrogram()
         self.timer.start(100)
+        self.plot_frequency_domain()
 
     def connectSignals(self):      
         # Connect push buttons
@@ -92,24 +100,25 @@ class MainApp( Ui_MainWindow):
         self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal, self.sampling_rate)
     
     def set_log_scale(self):
-        if self.comboBox_frequencyScale.currentIndex() == 0:
-            self.PlotWidget_fourier.log_scale = False
-        else:
-            self.PlotWidget_fourier.log_scale = True
+        self.PlotWidget_fourier.toggle_audiogram_scale()
         self.plot_frequency_domain()
 
 
     def uploadSignal(self):
-        if self.comboBox_modeSelection.currentIndex() == 2:
-            self.signal, self.sampling_rate = self.file_browser.browse_file("ecg")
-        elif self.comboBox_modeSelection.currentIndex() == 0:
-            self.signal, self.sampling_rate = self.file_browser.browse_file("music")
-        else:
-            self.signal, self.sampling_rate = self.file_browser.browse_file("voice")
-        # Perform FFT
-        self.freqs = fft.fftfreq(len(self.signal), 1 / self.sampling_rate) # returns an array of frequency values corresponding to each sample in the FFT result
-        self.spectrum = fft.fft(self.signal) # returns an array containing frequency components, their magnitudes, and their phases
+        if self.comboBox_modeSelection.currentIndex() == 0:
+            print("change mode please") #TODO: adjust this part after handling it
+
+        self.signal, self.sampling_rate = self.file_browser.browse_file()
+        if self.signal is None or not self.sampling_rate:
+            return
+    
+        self.freq_bins = fft.fftfreq(len(self.signal), 1 / self.sampling_rate) # returns an array of frequency values corresponding to each sample in the FFT result
+        self.freq_components = fft.fft(self.signal) # returns an array containing frequency components, their magnitudes, and their phases
+        # set all the sliders to its maximum value
+        for i in range(10):
+            self.sliders[i].setValue(10)
         self.plotSignal()
+
 
     def plotSignal(self): 
         self.PlotWidget_inputSignal.clear() 
@@ -124,16 +133,15 @@ class MainApp( Ui_MainWindow):
         self.PlotWidget_inputSignal.plot(self.time_values, self.signal, pen = "r")
         self.updateModifiedSignal()  # starts the modified signal corresponding to the sliders values. (made it this way because when rewinding, sliders' values aren't necessiraly = 10, so op signal isn't necessiraly same as ip signal)
         self.timer.start(100)
-        self.PlotWidget_inputSpectrogram.plotSpectrogram(self.signal, self.samplingRates[self.comboBox_modeSelection.currentIndex()])
-        self.PlotWidget_outputSpectrogram.plotSpectrogram(self.modified_signal, self.samplingRates[self.comboBox_modeSelection.currentIndex()])
+        self.PlotWidget_inputSpectrogram.plotSpectrogram(self.signal, self.sampling_rate)
+        self.PlotWidget_outputSpectrogram.plotSpectrogram(self.modified_signal, self.sampling_rate)
         if self.checkBox_showSpectrogram.isChecked():
             self.PlotWidget_inputSpectrogram.showSpectrogram()
             self.PlotWidget_outputSpectrogram.showSpectrogram()
-        self.plot_frequency_domain()
         
 
     def updateSignalView_timeDomain(self):
-        if len(self.signal) > 0 and self.isPaused == False:
+        if hasattr(self, "signal") and self.isPaused == False:
             if self.defaultMode:
                 # taking chunks from the signal and the corresponding time values
                 self.segment_y_ip = self.signal[self.curr_ptr : self.curr_ptr + self.chunksize]   # from index "curr_ptr" to index "curr_ptr + chunksize"
@@ -188,23 +196,30 @@ class MainApp( Ui_MainWindow):
 
         else:
             self.defaultMode = False
-            self.PlotWidget_fourier.plot_frequency_domain([])
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
+            self.checkBox_showSpectrogram.setChecked(False)
             self.isPaused = True
             self.left_x_view = 0 # used in adjusting the left x view of the signal while running in cine mode
             self.right_x_view  = self.left_x_view + 1  # adjusting the right x view
-            self.shown_sliders_indices = [1, 2, 5, 7]
+            if selected_index == 1:
+                self.shown_sliders_indices = [0, 1, 2, 7, 8, 9]  # indices of sliders for music mode
+            elif selected_index == 2:    
+                self.shown_sliders_indices = [ 1, 3, 5, 7, 9]    # indices of sliders for VOWELS mode
+            else:
+                self.shown_sliders_indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] # indices of sliders for Weiner mode
 
             for i in range(len(self.sliders)):
                 idxShown = False
                 for idx in self.shown_sliders_indices:
                     if i == idx:
                         idxShown = True
-                
                 if not idxShown:
                     self.sliders[i].hide()
                     self.labels[i].hide()
+                else:
+                    self.sliders[i].show()
+                    self.labels[i].show()
                         
             currDict = self.ranges[selected_index]   # the dictionary (corresponding to the chosen mode) containing ranges of frequencies for each slider from the list "ranges"
             loopCounter = 0
@@ -213,58 +228,55 @@ class MainApp( Ui_MainWindow):
                 self.labels[self.shown_sliders_indices[loopCounter]].setText(key)   # adjusting label of each slider
                 loopCounter += 1
             
-            self.PlotWidget_inputSignal.clear()
-            self.PlotWidget_outputSignal.clear()
             
-            self.sliderFrequencyMap = {}  # contains each slider as a key, the starting and ending freqs (tuple) of its range of freqs as the value
-            for i in range(len(self.shown_sliders_indices)):
-                self.sliderFrequencyMap[self.sliders[self.shown_sliders_indices[i]]] = currDict[self.labels[self.shown_sliders_indices[i]].text()]   # output map:  {slider_1 : [0, 170] , slider_2: [180, 240], ...}
-
+            
     def updateModifiedSignal(self):
-        # Modify the frequency spectrum based on slider values
+        # Modify the frequency freq_components based on slider values
+        self.PlotWidget_outputSignal.clear()
+
         if self.defaultMode:
+
             for i in range(0, 10):
                 self.magnitudes[i] = self.sliders[i].value() / 10.0
-                
             self.modified_signal = 0
             loopCounter = 0
             for i in range(10, 110, 10):
                 self.modified_signal += self.magnitudes[loopCounter] * np.sin(2* np.pi * i * self.time_values)
                 loopCounter += 1
-
-            # Update the output signal in real-time
-            self.PlotWidget_outputSignal.clear()  # Clear the previous plot
             self.PlotWidget_outputSignal.plot(self.time_values[ : self.curr_ptr + self.chunksize], self.modified_signal[ : self.curr_ptr + self.chunksize], pen='b')
-
-            # If we're playing, don't stop the timer
             if not self.isPaused:
                 self.togglePlayPause()
-
             self.PlotWidget_outputSpectrogram.update(None, self.magnitudes)
 
         else:
-            modified_spectrum = self.spectrum.copy()
+
+            if hasattr(self, "freq_components"):
+                modified_freq_components = self.freq_components.copy()
+            else:
+                print("You Should Upload Signal First!")
+                return
 
             loopCounter = 0
-            for key in self.ranges[self.comboBox_modeSelection.currentIndex()]:
+            for key in self.ranges[self.comboBox_modeSelection.currentIndex()]: 
                 low, high = self.ranges[self.comboBox_modeSelection.currentIndex()][key]
                 slider_value = self.sliders[self.shown_sliders_indices[loopCounter]].value() / 10.0
-                loopCounter += 1
-
                 # Apply gain to the selected frequency range
-                mask = (np.abs(self.freqs) >= low) & (np.abs(self.freqs) <= high)
-                modified_spectrum[mask] *= slider_value
-                
-            # Perform inverse FFT to get the modified time-domain signal
-            self.modified_signal = np.real(fft.ifft(modified_spectrum)) 
+                mask = (np.abs(self.freq_bins) >= low) & (np.abs(self.freq_bins) <= high)
+                modified_freq_components[mask] *= slider_value
+                loopCounter += 1    
 
-            self.file_browser.modified_signal = self.modified_signal
+            self.modified_signal = np.real(fft.ifft(modified_freq_components)) 
+            self.file_browser.signal = self.modified_signal
             self.output_time_values = np.linspace(start = 0, stop = self.duration, num = len(self.modified_signal))
-            self.PlotWidget_outputSignal.clear()
             self.PlotWidget_outputSignal.plotItem.setXRange(self.left_x_view, self.right_x_view)
             self.PlotWidget_outputSignal.plot(self.output_time_values, self.modified_signal, pen = "b")
             self.PlotWidget_outputSpectrogram.update(self.modified_signal, [-1])
+    
         self.plot_frequency_domain()
+
+
+
+
     def togglePlayPause(self):
         if self.isPaused == True:
             self.isPaused = False
@@ -277,16 +289,22 @@ class MainApp( Ui_MainWindow):
     def setSpeed(self, speed):
         self.timer.setInterval(int(100 / speed))
 
+
+
     def stopAndReset(self, reset):
         self.timer.stop()
         self.isPaused = True
         if reset:
             self.plotSignal()     
 
+
+
     def zoom(self, factor):
         self.PlotWidget_inputSignal.plotItem.getViewBox().scaleBy((factor, 1))
         # self.PlotWidget_outputSignal.plotItem.getViewBox().scaleBy((factor, 1))
-       
+
+
+
     def generateSignal(self, magnitudes):
         signal = 0
         loopCounter = 0
@@ -295,6 +313,8 @@ class MainApp( Ui_MainWindow):
             loopCounter += 1
         return signal
     
+
+
     def toggleSpectrogram(self):
         if self.checkBox_showSpectrogram.isChecked():
             self.PlotWidget_inputSpectrogram.showSpectrogram()
@@ -302,6 +322,7 @@ class MainApp( Ui_MainWindow):
         else:
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
