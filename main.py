@@ -1,3 +1,4 @@
+from calendar import c
 import sys
 import numpy as np
 from PyQt5 import QtWidgets
@@ -18,11 +19,14 @@ class MainApp( Ui_MainWindow):
         self.defaultMode = True
         self.modeChanged = False
         self.setupUI() # Calls our custom method which links the UI elements
+        
         self.retranslateUi(self)
         self.timer = QTimer()
-        self.ranges = [ #TODO : fix the ranges when you find a mixed music
+        self.connectSignals()
+
+        self.ranges = [
             {"empty" : ()},
-            { # music and animal sounds
+            { # music and animal sounds # TODO: Fix the ranges when you find mixed music and animal sounds
                         "Trumpet": (0, 500), 
                         "Xylophone" : (500, 1200),
                         "Brass": (1200, 6400),
@@ -38,13 +42,11 @@ class MainApp( Ui_MainWindow):
                 "Sound2" : (500, 1200),
                 "Sound3": (1200, 6400),  
             },
-            {"empty" : ()}, # TODO : fix the ranges when you find Weiner
+            {"Weiner" : (100,5000)}, # TODO : fix the ranges when you find Weiner
 
         ]
-        #self.samplingRates = [210, 27000, 19000, 2500] #TODO : check if this is right
         
         self.startDefault()
-        self.connectSignals()
 
     def setupUI(self):
         self.file_browser = FileBrowser(self)
@@ -106,8 +108,8 @@ class MainApp( Ui_MainWindow):
 
     def uploadSignal(self):
         if self.comboBox_modeSelection.currentIndex() == 0:
-            print("change mode please") #TODO: adjust this part after handling it
-
+            print("Choose a different mode!")
+            return
         self.signal, self.sampling_rate = self.file_browser.browse_file()
         if self.signal is None or not self.sampling_rate:
             return
@@ -183,6 +185,7 @@ class MainApp( Ui_MainWindow):
         selected_index = self.comboBox_modeSelection.currentIndex()
         self.PlotWidget_inputSignal.clear()
         self.PlotWidget_outputSignal.clear()
+        self.PlotWidget_fourier.clear_frequency_graph()
 
         if selected_index == 0:
             self.defaultMode = True
@@ -205,9 +208,9 @@ class MainApp( Ui_MainWindow):
             if selected_index == 1:
                 self.shown_sliders_indices = [0, 1, 2, 7, 8, 9]  # indices of sliders for music mode
             elif selected_index == 2:    
-                self.shown_sliders_indices = [ 1, 3, 5, 7, 9]    # indices of sliders for VOWELS mode
+                self.shown_sliders_indices = [ 3, 5, 6, 7, 8]    # indices of sliders for VOWELS mode
             else:
-                self.shown_sliders_indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] # indices of sliders for Weiner mode
+                self.shown_sliders_indices = [4] # indices of sliders for Weiner mode
 
             for i in range(len(self.sliders)):
                 idxShown = False
@@ -257,8 +260,9 @@ class MainApp( Ui_MainWindow):
                 return
 
             loopCounter = 0
-            for key in self.ranges[self.comboBox_modeSelection.currentIndex()]: 
-                low, high = self.ranges[self.comboBox_modeSelection.currentIndex()][key]
+            current_mode = self.comboBox_modeSelection.currentIndex()
+            for key in self.ranges[current_mode]: 
+                low, high = self.ranges[current_mode][key]
                 slider_value = self.sliders[self.shown_sliders_indices[loopCounter]].value() / 10.0
                 # Apply gain to the selected frequency range
                 mask = (np.abs(self.freq_bins) >= low) & (np.abs(self.freq_bins) <= high)
@@ -266,7 +270,7 @@ class MainApp( Ui_MainWindow):
                 loopCounter += 1    
 
             self.modified_signal = np.real(fft.ifft(modified_freq_components)) 
-            self.file_browser.signal = self.modified_signal
+            self.file_browser.modified_signal = self.modified_signal
             self.output_time_values = np.linspace(start = 0, stop = self.duration, num = len(self.modified_signal))
             self.PlotWidget_outputSignal.plotItem.setXRange(self.left_x_view, self.right_x_view)
             self.PlotWidget_outputSignal.plot(self.output_time_values, self.modified_signal, pen = "b")

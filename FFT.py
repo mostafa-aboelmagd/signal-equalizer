@@ -65,6 +65,8 @@ class FFTPlotCanvas(PlotWidget):
 
     def toggle_audiogram_scale(self):
         self.audiogram_mode = not self.audiogram_mode  
+    def clear_frequency_graph(self):
+        self.curve.setData([], [])
 
 class MainWindow(QMainWindow):
     def __init__(self):

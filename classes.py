@@ -17,6 +17,7 @@ class FileBrowser:
         self.parent = parent
         self.player = QMediaPlayer()
         self.signal = None
+        self.modified_signal = None
         self.sampling_rate = None
 
     def browse_file(self, mode = "wav"):
@@ -40,6 +41,7 @@ class FileBrowser:
                 file_path, _ = QFileDialog.getOpenFileName(directory= "D:/Signal-Equalizer-DSP", filter= " wav files (*.wav)")
                 self.fileName = Path(file_path).stem
                 self.signal, self.sampling_rate = librosa.load(file_path, sr= None)
+                self.modified_signal = self.signal
         except Exception:
             return None, None
 
@@ -67,7 +69,7 @@ class FileBrowser:
             self.player.stop()
         else:
             self.player = QMediaPlayer()
-            sf.write(temp_file_path, self.signal, self.sampling_rate)
+            sf.write(temp_file_path, self.modified_signal, self.sampling_rate)
             self.player.setMedia(QMediaContent(QUrl.fromLocalFile(temp_file_path)))
             self.player.play()
 
