@@ -17,13 +17,20 @@ class FFTPlotCanvas(PlotWidget):
 
         self.audiogram_mode = False  # Start in original frequency domain mode
 
-    def plot_frequency_domain(self, signal, sample_rate=44100):
+    def plot_frequency_domain(self, signal, sample_rate, modified_components = None, frequency_bins = None, length = None):
+        if modified_components is None:
+            N = len(signal)
+            freq_components = np.fft.fft(signal)
+            freq_magnitude = np.abs(freq_components[:N // 2])
+            freq_magnitude_db = 20 * np.log10(freq_magnitude + 1e-12)
+            freq_bins = np.fft.fftfreq(N, d=1 / sample_rate)[:N // 2]
+        else:
+            freq_components = modified_components
+            freq_magnitude = np.abs(freq_components[:length//2])
+            freq_magnitude_db = 20 * np.log10(freq_magnitude + 1e-12)
+            freq_bins = frequency_bins[:length // 2]
 
-        N = len(signal)
-        freq_components = np.fft.fft(signal)
-        freq_magnitude = np.abs(freq_components[:N // 2])
-        freq_magnitude_db = 20 * np.log10(freq_magnitude + 1e-12)
-        freq_bins = np.fft.fftfreq(N, d=1 / sample_rate)[:N // 2]
+
 
         if self.audiogram_mode:
             # Audiogram view: Limit frequencies to 250–8000 Hz and invert dB scale
@@ -32,15 +39,15 @@ class FFTPlotCanvas(PlotWidget):
             freq_magnitude_db = freq_magnitude_db[valid_indices]
 
             self.plotItem.setLabel("left", "(dB)")
-            self.plotItem.setLabel("bottom", "Frequency (Hz)")
             self.plotItem.getViewBox().setLogMode(True, False)  
             self.curve.setData(freq_bins, -freq_magnitude_db)  # Invert dB for audiogram
         else:
             # Original frequency domain view
             self.plotItem.setLabel("left", "Amplitude")
-            self.plotItem.setLabel("bottom", "Frequency (Hz)")
             self.plotItem.getViewBox().setLogMode(False, False)  # Linear frequency scale
             self.curve.setData(freq_bins, freq_magnitude)
+        self.plotItem.setLabel("bottom", "Frequency (Hz)")
+
         self._set_axis_limits(freq_bins, freq_magnitude if not self.audiogram_mode else freq_magnitude_db)
     
     def _set_axis_limits(self, freq_bins, magnitudes):
@@ -109,7 +116,9 @@ class MainWindow(QMainWindow):
             try:
                 self.signal, self.sample_rate = sf.read(file_name)
                 if len(self.signal.shape) > 1:
-                    self.signal = self.signal[:, 0]
+                    self.signal = self.signal[:, 1]
+                self.signal[:10*self.sample_rate]
+
                 print(f"Loaded {file_name} with sample rate {self.sample_rate} Hz")
             except Exception as e:
                 print(f"Failed to load audio: {e}")

@@ -1893,59 +1893,34 @@ class Ui_MainWindow(QMainWindow):
         self.label_33.setObjectName("label_33")
         self.gridLayout_32.addWidget(self.label_33, 3, 0, 1, 1)
         self.pushButton_uploadButton = QtWidgets.QPushButton(self.groupBox_6)
+        self.weinerButton = QtWidgets.QPushButton(self.groupBox_6)
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_uploadButton.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.weinerButton.sizePolicy().hasHeightForWidth())
         self.pushButton_uploadButton.setSizePolicy(sizePolicy)
+        self.weinerButton.setSizePolicy(sizePolicy)
         self.pushButton_uploadButton.setMinimumSize(QtCore.QSize(280, 36))
         self.pushButton_uploadButton.setMaximumSize(QtCore.QSize(150, 16777215))
+        self.weinerButton.setMinimumSize(QtCore.QSize(280, 36))
+        self.weinerButton.setMaximumSize(QtCore.QSize(150, 16777215))
         font = QtGui.QFont()
         font.setFamily("-apple-system")
         font.setPointSize(16)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_uploadButton.setFont(font)
-        self.pushButton_uploadButton.setStyleSheet("QPushButton{\n"
-"appearance: button;\n"
-"backface-visibility: hidden;\n"
-"background-color:  rgb(0, 154, 231);\n"
-"border-radius: 6px;\n"
-"border-width: 0;\n"
-"box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset,rgba(50, 50, 93, .1) 0 2px 5px 0,rgba(0, 0, 0, .07) 0 1px 1px 0;\n"
-"box-sizing: border-box;\n"
-"color: #fff;\n"
-"cursor: pointer;\n"
-"font-family: -apple-system,system-ui,\"Segoe UI\",Roboto,\"Helvetica Neue\",Ubuntu,sans-serif;\n"
-"font-size: 100%;\n"
-"height: 30px;\n"
-"line-height: 1.15;\n"
-"margin: 0 0 0;\n"
-"outline: none;\n"
-"overflow: hidden;\n"
-"padding: 3 8px;\n"
-"position: relative;\n"
-"text-align: center;\n"
-"text-transform: none;\n"
-"transform: translateZ(0);\n"
-"transition: all .2s,box-shadow .08s ease-in;\n"
-"user-select: none;\n"
-"-webkit-user-select: none;\n"
-"touch-action: manipulation;\n"
-"width: 100%; /* Reduced width to 200 pixels */\n"
-"}\n"
-"QPushButton:hover{\n"
-"background-color:  rgb(0, 115, 173);\n"
-"}\n"
-"QPushButton:pressed{\n"
-"background-color:  rgb(0, 115, 173);\n"
-"}")
+        self.weinerButton.setFont(font)
         icon6 = QtGui.QIcon()
         icon6.addPixmap(QtGui.QPixmap("../../../../0-MostafaMousaControl_PanelTask/Vital-Signals-Multichannel-Viewer/Vital-Signals-Multichannel-Viewer-main/ui/Icons/color-palette-svgrepo-com.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton_uploadButton.setIcon(icon6)
         self.pushButton_uploadButton.setIconSize(QtCore.QSize(22, 22))
         self.pushButton_uploadButton.setObjectName("pushButton_uploadButton")
+        self.weinerButton.setObjectName("weiner")
         self.gridLayout_32.addWidget(self.pushButton_uploadButton, 2, 0, 1, 1)
+        self.gridLayout_32.addWidget(self.weinerButton, 3, 0, 1, 1)
         self.comboBox_modeSelection = QtWidgets.QComboBox(self.groupBox_6)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
@@ -2039,6 +2014,7 @@ class Ui_MainWindow(QMainWindow):
         self.comboBox_modeSelection.setFont(font)
         self.comboBox_modeSelection.setStyleSheet("font: 40 13pt \"MS Shell Dlg 2\";")
         self.comboBox_modeSelection.setObjectName("comboBox_modeSelection")
+
         icon7 = QtGui.QIcon()
         icon7.addPixmap(QtGui.QPixmap("../../Signal-Equalizer-DSP/icons/Uniform.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.comboBox_modeSelection.addItem(icon7, "")
@@ -2404,6 +2380,7 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_zoomIn.setToolTip(_translate("MainWindow", "Zoom in"))
         self.label_33.setText(_translate("MainWindow", "Control Panel"))
         self.pushButton_uploadButton.setText(_translate("MainWindow", "Upload"))
+        self.weinerButton.setText(_translate("MainWindow", "Weiner"))
         self.comboBox_modeSelection.setItemText(0, _translate("MainWindow", "Uniform Range"))
         self.comboBox_modeSelection.setItemText(1, _translate("MainWindow", "Music & Animal"))
         self.comboBox_modeSelection.setItemText(2, _translate("MainWindow", "Vowels"))

@@ -27,6 +27,6 @@ def plot_formants(formant_frequencies):
     plt.show()
 
 if __name__ == "__main__":
-    audio_file = "VOWEL_E.wav"  # Replace with your audio file
+    audio_file = "VOWEL_A.wav"  # Replace with your audio file
     formant_frequencies = detect_formants(audio_file)
     plot_formants(formant_frequencies)

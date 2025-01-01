@@ -1,4 +1,3 @@
-from calendar import c
 import sys
 import numpy as np
 from PyQt5 import QtWidgets
@@ -11,6 +10,7 @@ class MainApp( Ui_MainWindow):
     def __init__(self):
         super(MainApp, self).__init__()
         self.setupUi(self) # Loads all components of the UI created using the designer
+        self.weinerButton = QtWidgets.QPushButton()
         self.magnitudes = [1] * 10
         self.sliders = [self.verticalSlider_1, self.verticalSlider_2, self.verticalSlider_3, self.verticalSlider_4, self.verticalSlider_5,
                         self.verticalSlider_6, self.verticalSlider_7, self.verticalSlider_8, self.verticalSlider_9, self.verticalSlider_10]
@@ -27,20 +27,19 @@ class MainApp( Ui_MainWindow):
         self.ranges = [
             {"empty" : ()},
             { # music and animal sounds # TODO: Fix the ranges when you find mixed music and animal sounds
-                        "Trumpet": (0, 500), 
-                        "Xylophone" : (500, 1200),
-                        "Brass": (1200, 6400),
-                        "Celesta" : (4000, 13000),
-                        "Dogs" : (0, 450),
-                        "Wolves" : (450, 1100),
+                        "Bass" : (0, 380),# DONE
+                        "Dog": (387, 1300),# DONE
+                        "Cat" : (1300, 4000), # DONE
+                        "Bird" : (4000, 4900), # DONE
+                        "Triangle" : (5000, 10000) # DONE
             },
             {
                 # TODO: Fix the ranges when you find VOWELS
-                "A" : (1100, 3000),
+                "A" : (0, 1000 , 2000, 3000),
                 "E" : (3000, 9000),
                 "Sound1": (0, 500), 
                 "Sound2" : (500, 1200),
-                "Sound3": (1200, 6400),  
+                "Sound3": (1200, 6400)
             },
             {"Weiner" : (100,5000)}, # TODO : fix the ranges when you find Weiner
 
@@ -60,7 +59,7 @@ class MainApp( Ui_MainWindow):
 
     def startDefault(self):
         self.isPaused = False
-        self.sampling_rate = 1000 # TODO : check if this right
+        self.sampling_rate = 1000
         self.chunksize = 10
         self.curr_ptr = 0
         self.left_x_view = 0 # used in adjusting the view of the signal while running in cine mode
@@ -68,6 +67,7 @@ class MainApp( Ui_MainWindow):
         self.time_values = np.linspace(0, 1, 1000)
         self.signal = self.generateSignal(magnitudes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         self.modified_signal = self.signal
+        self.len_sig = len(self.signal)
         if self.modeChanged:
             self.PlotWidget_inputSpectrogram.plotSpectrogram(None, 210)
             self.PlotWidget_outputSpectrogram.plotSpectrogram(None, 210)
@@ -99,7 +99,10 @@ class MainApp( Ui_MainWindow):
             slider.valueChanged.connect(self.updateModifiedSignal)
 
     def plot_frequency_domain(self):
-        self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal, self.sampling_rate)
+        if self.comboBox_modeSelection.currentIndex() == 0:
+            self.PlotWidget_fourier.plot_frequency_domain(self.modified_signal, self.sampling_rate , None, None )
+        else:
+            self.PlotWidget_fourier.plot_frequency_domain(None, None, self.modified_components,self.freq_bins , self.len_sig)
     
     def set_log_scale(self):
         self.PlotWidget_fourier.toggle_audiogram_scale()
@@ -113,9 +116,14 @@ class MainApp( Ui_MainWindow):
         self.signal, self.sampling_rate = self.file_browser.browse_file()
         if self.signal is None or not self.sampling_rate:
             return
+        if len(self.signal.shape)>1 :
+            self.signal = self.signal[:,0]
+        self.signal = self.signal[:15*self.sampling_rate]
+        self.len_sig = len(self.signal)
     
-        self.freq_bins = fft.fftfreq(len(self.signal), 1 / self.sampling_rate) # returns an array of frequency values corresponding to each sample in the FFT result
+        self.freq_bins = fft.fftfreq(self.len_sig, 1 / self.sampling_rate) # returns an array of frequency values corresponding to each sample in the FFT result
         self.freq_components = fft.fft(self.signal) # returns an array containing frequency components, their magnitudes, and their phases
+        self.modified_components = self.freq_components
         # set all the sliders to its maximum value
         for i in range(10):
             self.sliders[i].setValue(10)
@@ -127,7 +135,7 @@ class MainApp( Ui_MainWindow):
         self.left_x_view = 0 # used in adjusting the left x view of the signal while running in cine mode
         self.right_x_view  = self.left_x_view + 1  # adjusting the right x view
         self.duration = (1/self.sampling_rate) * len(self.signal)
-        self.time_values = np.linspace(start = 0, stop = self.duration, num = len(self.signal))   # duration = Ts (time bet each 2 samples) * number of samples (len(self.signal))
+        self.time_values = np.linspace(start = 0, stop = self.duration, num = self.len_sig)   # duration = Ts (time bet each 2 samples) * number of samples (len(self.signal))
         self.output_time_values = self.time_values
         self.isPaused = False
         self.PlotWidget_inputSignal.plotItem.setYRange(-1, 1)
@@ -158,7 +166,7 @@ class MainApp( Ui_MainWindow):
                 self.PlotWidget_outputSignal.plot(self.segment_x, self.segment_y_op, pen = 'b')
 
 
-                if self.curr_ptr + self.chunksize < len(self.signal):
+                if self.curr_ptr + self.chunksize < self.len_sig:
                     self.curr_ptr += self.chunksize
                     if self.time_values[self.curr_ptr] > self.left_x_view + 1:
                         self.left_x_view += 1
@@ -206,7 +214,7 @@ class MainApp( Ui_MainWindow):
             self.left_x_view = 0 # used in adjusting the left x view of the signal while running in cine mode
             self.right_x_view  = self.left_x_view + 1  # adjusting the right x view
             if selected_index == 1:
-                self.shown_sliders_indices = [0, 1, 2, 7, 8, 9]  # indices of sliders for music mode
+                self.shown_sliders_indices = [0, 1, 2, 7, 8]  # indices of sliders for music mode
             elif selected_index == 2:    
                 self.shown_sliders_indices = [ 3, 5, 6, 7, 8]    # indices of sliders for VOWELS mode
             else:
@@ -261,13 +269,21 @@ class MainApp( Ui_MainWindow):
 
             loopCounter = 0
             current_mode = self.comboBox_modeSelection.currentIndex()
-            for key in self.ranges[current_mode]: 
-                low, high = self.ranges[current_mode][key]
-                slider_value = self.sliders[self.shown_sliders_indices[loopCounter]].value() / 10.0
-                # Apply gain to the selected frequency range
-                mask = (np.abs(self.freq_bins) >= low) & (np.abs(self.freq_bins) <= high)
-                modified_freq_components[mask] *= slider_value
-                loopCounter += 1    
+            for key in self.ranges[current_mode]:
+                if len(self.ranges[current_mode][key]) > 2:
+                    low1, high1, low2, high2 = self.ranges[current_mode][key]
+                    slider_value = self.sliders[self.shown_sliders_indices[loopCounter]].value() / 10.0
+                    mask1 = (np.abs(self.freq_bins) >= low1) & (np.abs(self.freq_bins) <= high1)
+                    mask2 = (np.abs(self.freq_bins) >= low2) & (np.abs(self.freq_bins) <= high2)
+                    modified_freq_components[mask1] *= slider_value
+                    modified_freq_components[mask2] *= slider_value 
+                else:
+                    low, high = self.ranges[current_mode][key]
+                    slider_value = self.sliders[self.shown_sliders_indices[loopCounter]].value() / 10.0
+                    mask = (np.abs(self.freq_bins) >= low) & (np.abs(self.freq_bins) <= high)
+                    modified_freq_components[mask] *= slider_value
+                loopCounter += 1  
+            self.modified_components = modified_freq_components  
 
             self.modified_signal = np.real(fft.ifft(modified_freq_components)) 
             self.file_browser.modified_signal = self.modified_signal
