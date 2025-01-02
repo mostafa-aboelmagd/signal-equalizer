@@ -27,11 +27,11 @@ class MainApp( Ui_MainWindow):
         self.ranges = [
             {"empty" : ()},
             { # music and animal sounds # TODO: Fix the ranges when you find mixed music and animal sounds
-                        "Bass" : (0, 380),# DONE
-                        "Dog": (387, 1300),# DONE
-                        "Cat" : (1300, 4000), # DONE
-                        "Bird" : (4000, 4900), # DONE
-                        "Triangle" : (5000, 10000) # DONE
+                        "Dog": (0, 1300),# DONE
+                        "Cat" : (1301, 4000), # DONE
+                        "Bird" : (4001, 5000), # DONE
+                        "Triangle" : (5001, 10000), # DONE
+                        "Maracas" : (10001, 17250)
             },
             {
                 # TODO: Fix the ranges when you find VOWELS
