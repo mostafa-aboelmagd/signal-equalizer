@@ -5,7 +5,7 @@ import soundfile as sf
 
 
 # Read the audio file
-signal, sampling_rate = sf.read('bass.wav')
+signal, sampling_rate = sf.read('ILOVE_O.wav')
 
 if len(signal.shape) > 1:
     signal = signal[:, 1]
@@ -13,8 +13,15 @@ if len(signal.shape) > 1:
 freq = fft.fft(signal)
 freqs_bins = fft.fftfreq(len(signal), 1 / sampling_rate)
 vowel_formant_ranges = [
-        #(0, 390),
-        (380,20000)
+    # Define formant frequency ranges for "a" vowels (example ranges)
+    # (320,340),
+    # (640,675),
+    # (980,1000),
+    # (1300, 1335),
+    # (3286,3310),
+    # (3950,3969)
+    ####################################################################
+    # Define formant frequency ranges for "e" vowels (example ranges)
         
 ]   
 

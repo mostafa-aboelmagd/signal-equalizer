@@ -27,6 +27,7 @@ class FFTPlotCanvas(PlotWidget):
         else:
             freq_components = modified_components
             freq_magnitude = np.abs(freq_components[:length//2])
+                    
             freq_magnitude_db = 20 * np.log10(freq_magnitude + 1e-12)
             freq_bins = frequency_bins[:length // 2]
 
@@ -45,6 +46,8 @@ class FFTPlotCanvas(PlotWidget):
             # Original frequency domain view
             self.plotItem.setLabel("left", "Amplitude")
             self.plotItem.getViewBox().setLogMode(False, False)  # Linear frequency scale
+            # print the freq_bins where the magnitude is greater than 50
+            print(freq_bins[freq_magnitude>50])
             self.curve.setData(freq_bins, freq_magnitude)
         self.plotItem.setLabel("bottom", "Frequency (Hz)")
 
