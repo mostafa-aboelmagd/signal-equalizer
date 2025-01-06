@@ -5,7 +5,7 @@ import soundfile as sf
 
 
 # Read the audio file
-signal, sampling_rate = sf.read('ILOVE_O.wav')
+signal, sampling_rate = sf.read('ILOVE_10sec.wav')
 
 if len(signal.shape) > 1:
     signal = signal[:, 1]
@@ -21,7 +21,14 @@ vowel_formant_ranges = [
     # (3286,3310),
     # (3950,3969)
     ####################################################################
-    # Define formant frequency ranges for "e" vowels (example ranges)
+    # Define formant frequency ranges for "O" vowels (example ranges)
+    (215, 225),
+    (270,325),
+    (600,630),
+    (925,940),
+    (1235,1260),
+    (2795,2810)
+    ####################################################################
         
 ]   
 
