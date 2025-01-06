@@ -5,12 +5,13 @@ from PyQt5.QtCore import QTimer
 from classes import FileBrowser
 import scipy.fftpack as fft
 from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
+import pyqtgraph as pg
 
 class MainApp( Ui_MainWindow):
     def __init__(self):
         super(MainApp, self).__init__()
         self.setupUi(self) # Loads all components of the UI created using the designer
-        self.weinerButton = QtWidgets.QPushButton()
+        #self.weinerButton = QtWidgets.QPushButton()
         self.magnitudes = [1] * 10
         self.sliders = [self.verticalSlider_1, self.verticalSlider_2, self.verticalSlider_3, self.verticalSlider_4, self.verticalSlider_5,
                         self.verticalSlider_6, self.verticalSlider_7, self.verticalSlider_8, self.verticalSlider_9, self.verticalSlider_10]
@@ -18,6 +19,7 @@ class MainApp( Ui_MainWindow):
                        self.label_6_Hz, self.label_7_Hz, self.label_8_Hz, self.label_9_Hz, self.label_10_Hz]
         self.defaultMode = True
         self.modeChanged = False
+        self.region = None
         self.setupUI() # Calls our custom method which links the UI elements
         
         self.retranslateUi(self)
@@ -27,11 +29,11 @@ class MainApp( Ui_MainWindow):
         self.ranges = [
             {"empty" : ()},
             { # music and animal sounds # TODO: Fix the ranges when you find mixed music and animal sounds
-                        "Bass" : (0, 380),# DONE
-                        "Dog": (387, 1300),# DONE
-                        "Cat" : (1300, 4000), # DONE
-                        "Bird" : (4000, 4900), # DONE
-                        "Triangle" : (5000, 10000) # DONE
+                        "Dog": (0, 1300),# DONE
+                        "Cat" : (1301, 4000), # DONE
+                        "Bird" : (4001, 5000), # DONE
+                        "Triangle" : (5001, 10000), # DONE
+                        "Maracas" : (10001, 17250)
             },
             {
                 # TODO: Fix the ranges when you find VOWELS
@@ -41,7 +43,7 @@ class MainApp( Ui_MainWindow):
                 "Sound2" : (500, 1200),
                 "Sound3": (1200, 6400)
             },
-            {"Weiner" : (100,5000)}, # TODO : fix the ranges when you find Weiner
+            # {"Weiner" : (100,5000)}, # TODO : fix the ranges when you find Weiner
 
         ]
         
@@ -87,9 +89,9 @@ class MainApp( Ui_MainWindow):
         self.comboBox_modeSelection.currentIndexChanged.connect(self.changeMode)
         self.timer.timeout.connect(self.updateSignalView_timeDomain)
         self.pushButton_uploadButton.clicked.connect(self.uploadSignal)
+        self.weinerButton.clicked.connect(self.updateModifiedSignal)  # to apply weiner every time we change the self.region position
         self.comboBox_frequencyScale.activated.connect(self.set_log_scale)
-        self.speedSlider.valueChanged.connect(self.setSpeed)
-   
+        self.speedSlider.valueChanged.connect(self.setSpeed)   
         # Connect other UI elements
         for slider in self.sliders:
             slider.setMinimum(0)
@@ -141,6 +143,8 @@ class MainApp( Ui_MainWindow):
         self.PlotWidget_inputSignal.plotItem.setYRange(-1, 1)
         self.PlotWidget_inputSignal.plotItem.setXRange(self.left_x_view, self.right_x_view)    
         self.PlotWidget_inputSignal.plot(self.time_values, self.signal, pen = "r")
+        if self.comboBox_modeSelection.currentIndex() == 3:    # wiener mode
+            self.PlotWidget_inputSignal.addItem(self.region)  # add the region on the input signal to apply the filter on it when self.updateModifedSignal is called
         self.updateModifiedSignal()  # starts the modified signal corresponding to the sliders values. (made it this way because when rewinding, sliders' values aren't necessiraly = 10, so op signal isn't necessiraly same as ip signal)
         self.timer.start(100)
         self.PlotWidget_inputSpectrogram.plotSpectrogram(self.signal, self.sampling_rate)
@@ -186,8 +190,59 @@ class MainApp( Ui_MainWindow):
                 if self.right_x_view > self.duration:
                     self.timer.stop()
                     self.isPaused = True   
-
     
+    
+    def apply_wiener_filter(self):
+        if self.region is not None and self.signal is not None:
+            print("enterd wiener method")
+            try:
+                # Get alpha from slider
+                alpha = self.sliders[self.shown_sliders_indices[0]].value() 
+                
+                # Rest of your existing filter code, replacing the hardcoded alpha
+                region_min, region_max = self.region.getRegion()
+                sample_min = int(region_min * self.sampling_rate)
+                sample_max = int(region_max * self.sampling_rate)
+                noise = self.signal[sample_min:sample_max]
+                
+                # Parameters
+                nfft = 2048
+                hop = nfft // 4
+                window = np.hanning(nfft)
+                
+                # Estimate noise spectrum
+                noise_spectra = []
+                for i in range(0, len(noise) - nfft, hop):
+                    segment = noise[i:i + nfft] * window
+                    noise_spectra.append(np.abs(np.fft.fft(segment))**2)
+                noise_psd = np.mean(noise_spectra, axis=0)
+                
+                self.modified_signal = np.zeros(len(self.signal))
+                
+                for i in range(0, len(self.signal) - nfft, hop):
+                    segment = self.signal[i:i + nfft] * window
+                    spectrum = np.fft.fft(segment)
+                    power = np.abs(spectrum)**2
+                    
+                    eps = 1e-6
+                    snr = np.maximum(power / (noise_psd + eps) - 1, 0)
+                    H = snr / (snr + alpha)
+                    
+                    freq_smooth = np.linspace(0.5, 1.0, len(H)//2)
+                    H[:len(H)//2] *= freq_smooth
+                    H[len(H)//2:] *= freq_smooth[::-1]
+                    
+                    filtered = np.fft.ifft(spectrum * H)
+                    self.modified_signal[i:i + nfft] += np.real(filtered) * window
+                
+                norm_factor = np.sum(np.hanning(nfft)**2)
+                self.modified_signal /= norm_factor
+                self.modified_signal /= np.max(np.abs(self.modified_signal))
+                
+                
+            except Exception as e:
+                print(f"Error applying Wiener filter: {str(e)}")
+        
     def changeMode (self):
         self.modeChanged = True
         selected_index = self.comboBox_modeSelection.currentIndex()
@@ -196,7 +251,10 @@ class MainApp( Ui_MainWindow):
         self.PlotWidget_fourier.clear_frequency_graph()
 
         if selected_index == 0:
+            
+            
             self.defaultMode = True
+            self.region = None
             for i in range(len(self.sliders)):
                 self.sliders[i].show()
                 self.labels[i].show()
@@ -205,7 +263,10 @@ class MainApp( Ui_MainWindow):
                 self.sliders[i].setValue(10)
             self.startDefault()
 
+
         else:
+            
+            
             self.defaultMode = False
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
@@ -215,11 +276,19 @@ class MainApp( Ui_MainWindow):
             self.right_x_view  = self.left_x_view + 1  # adjusting the right x view
             if selected_index == 1:
                 self.shown_sliders_indices = [0, 1, 2, 7, 8]  # indices of sliders for music mode
+                self.region = None
             elif selected_index == 2:    
                 self.shown_sliders_indices = [ 3, 5, 6, 7, 8]    # indices of sliders for VOWELS mode
+                self.region = None
             else:
                 self.shown_sliders_indices = [4] # indices of sliders for Weiner mode
-
+                self.sliders[self.shown_sliders_indices[0]].setValue(10)
+                self.labels[self.shown_sliders_indices[0]].setText("alpha")
+                self.region = pg.LinearRegionItem()      # accessing the self.region as not to be none ( isn't appearing on ip signal yet)
+                self.region.sigRegionChangeFinished.connect(self.apply_wiener_filter)   # call the apply wiener method when the region is moved
+                self.sliders[self.shown_sliders_indices[0]].valueChanged.connect(self.updateModifiedSignal)
+                
+                ###########################################################################################################################################################################
             for i in range(len(self.sliders)):
                 idxShown = False
                 for idx in self.shown_sliders_indices:
@@ -231,19 +300,20 @@ class MainApp( Ui_MainWindow):
                 else:
                     self.sliders[i].show()
                     self.labels[i].show()
-                        
-            currDict = self.ranges[selected_index]   # the dictionary (corresponding to the chosen mode) containing ranges of frequencies for each slider from the list "ranges"
-            loopCounter = 0
-            for key in currDict:
-                self.sliders[self.shown_sliders_indices[loopCounter]].setValue(10)  # initializing scale of each slider to be 1 (maximum)
-                self.labels[self.shown_sliders_indices[loopCounter]].setText(key)   # adjusting label of each slider
-                loopCounter += 1
+            if self.comboBox_modeSelection.currentIndex() != 3:                  
+                currDict = self.ranges[selected_index]   # the dictionary (corresponding to the chosen mode) containing ranges of frequencies for each slider from the list "ranges"
+                loopCounter = 0
+                for key in currDict:
+                    self.sliders[self.shown_sliders_indices[loopCounter]].setValue(10)  # initializing scale of each slider to be 1 (maximum)
+                    self.labels[self.shown_sliders_indices[loopCounter]].setText(key)   # adjusting label of each slider
+                    loopCounter += 1
             
             
             
     def updateModifiedSignal(self):
         # Modify the frequency freq_components based on slider values
         self.PlotWidget_outputSignal.clear()
+            
 
         if self.defaultMode:
 
@@ -258,9 +328,9 @@ class MainApp( Ui_MainWindow):
             if not self.isPaused:
                 self.togglePlayPause()
             self.PlotWidget_outputSpectrogram.update(None, self.magnitudes)
-
-        else:
-
+            return
+   
+        elif self.comboBox_modeSelection.currentIndex() != 3: # other modes except wiener
             if hasattr(self, "freq_components"):
                 modified_freq_components = self.freq_components.copy()
             else:
@@ -284,13 +354,16 @@ class MainApp( Ui_MainWindow):
                     modified_freq_components[mask] *= slider_value
                 loopCounter += 1  
             self.modified_components = modified_freq_components  
-
             self.modified_signal = np.real(fft.ifft(modified_freq_components)) 
-            self.file_browser.modified_signal = self.modified_signal
-            self.output_time_values = np.linspace(start = 0, stop = self.duration, num = len(self.modified_signal))
-            self.PlotWidget_outputSignal.plotItem.setXRange(self.left_x_view, self.right_x_view)
-            self.PlotWidget_outputSignal.plot(self.output_time_values, self.modified_signal, pen = "b")
-            self.PlotWidget_outputSpectrogram.update(self.modified_signal, [-1])
+        
+        else:
+            self.apply_wiener_filter() 
+            print("wiener called from self.updateModifiedSignal method")
+        self.file_browser.modified_signal = self.modified_signal
+        self.output_time_values = np.linspace(start = 0, stop = self.duration, num = len(self.modified_signal))
+        self.PlotWidget_outputSignal.plotItem.setXRange(self.left_x_view, self.right_x_view)
+        self.PlotWidget_outputSignal.plot(self.output_time_values, self.modified_signal, pen = "b")
+        self.PlotWidget_outputSpectrogram.update(self.modified_signal, [-1])
     
         self.plot_frequency_domain()
 

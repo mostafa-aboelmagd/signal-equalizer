@@ -2380,7 +2380,7 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_zoomIn.setToolTip(_translate("MainWindow", "Zoom in"))
         self.label_33.setText(_translate("MainWindow", "Control Panel"))
         self.pushButton_uploadButton.setText(_translate("MainWindow", "Upload"))
-        self.weinerButton.setText(_translate("MainWindow", "Weiner"))
+        self.weinerButton.setText(_translate("MainWindow", "Apply Wiener"))
         self.comboBox_modeSelection.setItemText(0, _translate("MainWindow", "Uniform Range"))
         self.comboBox_modeSelection.setItemText(1, _translate("MainWindow", "Music & Animal"))
         self.comboBox_modeSelection.setItemText(2, _translate("MainWindow", "Vowels"))
@@ -2392,6 +2392,8 @@ class Ui_MainWindow(QMainWindow):
         self.actionVowels.setText(_translate("MainWindow", "Vowels"))
         self.actionWeiner.setText(_translate("MainWindow", "Weiner Filter"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
+        
+
 from pyqtgraph import PlotWidget
 
 
