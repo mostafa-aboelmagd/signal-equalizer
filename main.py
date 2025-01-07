@@ -37,13 +37,12 @@ class MainApp( Ui_MainWindow):
             },
             {
                 # TODO: Fix the ranges when you find VOWELS
-                "A" : (0, 1000 , 2000, 3000),
-                "E" : (3000, 9000),
-                "Sound1": (0, 500), 
-                "Sound2" : (500, 1200),
-                "Sound3": (1200, 6400)
+                "A" : (320,340 , 640,675,980,1000,1300, 1335,3286,3310,3950,3969),
+                "O" : (215, 225, 270,325,600,630,925,940,1235,1260,2795,2810),
+                "bass": (0,400), 
+                "violin" : (570, 710),
+                "gitar": (400,570, 700,890,  950,1250,  1320,1670,  1720,1820)
             },
-            # {"Weiner" : (100,5000)}, # TODO : fix the ranges when you find Weiner
 
         ]
         
@@ -341,12 +340,11 @@ class MainApp( Ui_MainWindow):
             current_mode = self.comboBox_modeSelection.currentIndex()
             for key in self.ranges[current_mode]:
                 if len(self.ranges[current_mode][key]) > 2:
-                    low1, high1, low2, high2 = self.ranges[current_mode][key]
-                    slider_value = self.sliders[self.shown_sliders_indices[loopCounter]].value() / 10.0
-                    mask1 = (np.abs(self.freq_bins) >= low1) & (np.abs(self.freq_bins) <= high1)
-                    mask2 = (np.abs(self.freq_bins) >= low2) & (np.abs(self.freq_bins) <= high2)
-                    modified_freq_components[mask1] *= slider_value
-                    modified_freq_components[mask2] *= slider_value 
+                    for i in range(0, len(self.ranges[current_mode][key]), 2):
+                        low, high = self.ranges[current_mode][key][i], self.ranges[current_mode][key][i+1]
+                        slider_value = self.sliders[self.shown_sliders_indices[loopCounter]].value() / 10.0
+                        mask = (np.abs(self.freq_bins) >= low) & (np.abs(self.freq_bins) <= high)
+                        modified_freq_components[mask] *= slider_value
                 else:
                     low, high = self.ranges[current_mode][key]
                     slider_value = self.sliders[self.shown_sliders_indices[loopCounter]].value() / 10.0

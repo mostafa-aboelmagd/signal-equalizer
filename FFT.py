@@ -47,7 +47,7 @@ class FFTPlotCanvas(PlotWidget):
             self.plotItem.setLabel("left", "Amplitude")
             self.plotItem.getViewBox().setLogMode(False, False)  # Linear frequency scale
             # print the freq_bins where the magnitude is greater than 50
-            print(freq_bins[freq_magnitude>50])
+            print(freq_bins[freq_magnitude>10])
             self.curve.setData(freq_bins, freq_magnitude)
         self.plotItem.setLabel("bottom", "Frequency (Hz)")
 
