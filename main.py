@@ -4,14 +4,15 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTimer
 from classes import FileBrowser
 import scipy.fftpack as fft
-from UITEAM15 import Ui_MainWindow  # Import the Ui_MainWindow class
+from UI_Window import Ui_MainWindow  # Import the Ui_MainWindow class
 import pyqtgraph as pg
 
 class MainApp( Ui_MainWindow):
     def __init__(self):
         super(MainApp, self).__init__()
         self.setupUi(self) # Loads all components of the UI created using the designer
-        #self.weinerButton = QtWidgets.QPushButton()
+        #self.wienerButton = QtWidgets.QPushButton()
+        self.wienerButton.hide()
         self.magnitudes = [1] * 10
         self.sliders = [self.verticalSlider_1, self.verticalSlider_2, self.verticalSlider_3, self.verticalSlider_4, self.verticalSlider_5,
                         self.verticalSlider_6, self.verticalSlider_7, self.verticalSlider_8, self.verticalSlider_9, self.verticalSlider_10]
@@ -88,7 +89,7 @@ class MainApp( Ui_MainWindow):
         self.comboBox_modeSelection.currentIndexChanged.connect(self.changeMode)
         self.timer.timeout.connect(self.updateSignalView_timeDomain)
         self.pushButton_uploadButton.clicked.connect(self.uploadSignal)
-        self.weinerButton.clicked.connect(self.updateModifiedSignal)  # to apply weiner every time we change the self.region position
+        self.wienerButton.clicked.connect(self.updateModifiedSignal)  # to apply wiener every time we change the self.region position
         self.comboBox_frequencyScale.activated.connect(self.set_log_scale)
         self.speedSlider.valueChanged.connect(self.setSpeed)   
         # Connect other UI elements
@@ -251,7 +252,7 @@ class MainApp( Ui_MainWindow):
 
         if selected_index == 0:
             
-            
+            self.wienerButton.hide()
             self.defaultMode = True
             self.region = None
             for i in range(len(self.sliders)):
@@ -264,8 +265,11 @@ class MainApp( Ui_MainWindow):
 
 
         else:
-            
-            
+            if selected_index == 3:
+                self.wienerButton.show()
+            else:
+                self.wienerButton.hide()
+                
             self.defaultMode = False
             self.PlotWidget_inputSpectrogram.hideSpectrogram()
             self.PlotWidget_outputSpectrogram.hideSpectrogram()
@@ -280,7 +284,7 @@ class MainApp( Ui_MainWindow):
                 self.shown_sliders_indices = [ 3, 5, 6, 7, 8]    # indices of sliders for VOWELS mode
                 self.region = None
             else:
-                self.shown_sliders_indices = [4] # indices of sliders for Weiner mode
+                self.shown_sliders_indices = [4] # indices of sliders for Wiener mode
                 self.sliders[self.shown_sliders_indices[0]].setValue(10)
                 self.labels[self.shown_sliders_indices[0]].setText("alpha")
                 self.region = pg.LinearRegionItem()      # accessing the self.region as not to be none ( isn't appearing on ip signal yet)
