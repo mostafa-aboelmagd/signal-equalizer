@@ -1,5 +1,5 @@
 # Signal Equalizer
-![alt text](screenshots/home.png)
+![Main Picture](screenshots/home.png)
 
 
 ## Description
@@ -18,7 +18,7 @@
 ## Features
 ### 1. Uniform Range
 - Showcase A Combined Signal Of Sinusoidals Whose Frequencies Range From 10 To 100 Hz
-![alt text](screenshots/audiogram.png)
+![Audiogram Picture Of Unifrom Range](screenshots/audiogram.png)
 
 ### 2. Music & Animals Mode
 - Allow Control Of The Magnitude Of Specific Musical Instruments & Animals Sounds In A Mixed Signal
