@@ -17,19 +17,19 @@
 
 ## Features
 ### 1. Uniform Range
-- Showcases A Combined Signal Of Sinusoidals Whose Frequencies Range From 10 To 100 Hz
+- Showcase A Combined Signal Of Sinusoidals Whose Frequencies Range From 10 To 100 Hz
 ![alt text](screenshots/audiogram.png)
 
 ### 2. Music & Animals Mode
-- Allows Control Of The Magnitude Of Specific Musical Instruments & Animals Sounds In A Mixed Signal
+- Allow Control Of The Magnitude Of Specific Musical Instruments & Animals Sounds In A Mixed Signal
 
 https://github.com/user-attachments/assets/e27580c4-8888-40c0-8022-6c3363c86765
 
 ### 3. Music & Vowels Mode
-- Allows Control Of The Magnitude Of Specific Musical Instruments & Specific Letters In A Song
+- Allow Control Of The Magnitude Of Specific Musical Instruments & Specific Letters In A Song
 
 ### 4. Wiener Filter
-- Enables The Reduction Of Noise & Enhancement Of Signal Quality
+- Enable The Reduction Of Noise & Enhancement Of Signal Quality
 
 https://github.com/user-attachments/assets/d5af1f76-e06e-4ad8-b0d0-7e919246919f
 
