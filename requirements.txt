@@ -1,0 +1,9 @@
+PyQt5==5.15.9
+pyqtgraph==0.13.3
+numpy==1.25.0
+matplotlib==3.8.0
+scipy==1.11.3
+soundfile==0.12.1
+pandas==2.1.2
+librosa==0.10.1
+parselmouth==0.3.4
